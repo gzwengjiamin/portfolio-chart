@@ -1,0 +1,3161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>全生命周期资产操作全景图 20260227-v5.23</title>
+  <style>
+    :root {
+      /* ===== 核心色板 ===== */
+      --c-blue: #60a5fa;
+      --c-purple: #a78bfa;
+      --c-pink: #f472b6;
+      --c-orange: #fb923c;
+      --c-green: #34d399;
+      --c-red: #f87171;
+      --c-yellow: #facc15;
+      --c-text: #e0e6f0;
+      --c-text-secondary: #a8b8cf;
+      --c-text-muted: #7b8db0;
+      --c-text-dim: #546380;
+      --c-text-heading: #f1f5f9;
+      --c-text-table: #8892b0;
+      --c-bg-body-start: #080c1f;
+      --c-bg-body-mid: #111833;
+      --c-bg-body-end: #0a0f20;
+      --c-bg-card: rgba(255,255,255,0.04);
+      --c-bg-card-hover: rgba(255,255,255,0.02);
+      --c-border-card: rgba(255,255,255,0.08);
+      --c-border-subtle: rgba(255,255,255,0.06);
+      --c-border-faint: rgba(255,255,255,0.04);
+      /* ===== 半透明色（用于背景/边框） ===== */
+      --c-blue-bg: rgba(96,165,250,0.12);
+      --c-purple-bg: rgba(167,139,250,0.12);
+      --c-pink-bg: rgba(244,114,182,0.12);
+      --c-orange-bg: rgba(251,146,60,0.12);
+      --c-green-bg: rgba(52,211,153,0.12);
+      --c-red-bg: rgba(248,113,113,0.12);
+      --c-yellow-bg: rgba(250,204,21,0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, var(--c-bg-body-start) 0%, var(--c-bg-body-mid) 50%, var(--c-bg-body-end) 100%);
+      color: var(--c-text);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container { max-width: 1440px; margin: 0 auto; }
+
+    /* ========== 标题区 ========== */
+    .header { text-align: center; margin-bottom: 56px; }
+    .header h1 {
+      font-size: 38px; font-weight: 900;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: 3px;
+    }
+    .header .subtitle { font-size: 15px; color: var(--c-text-muted); margin-top: 10px; line-height: 1.8; }
+    .header .version {
+      display: inline-block; margin-top: 14px; padding: 5px 16px; border-radius: 16px;
+      font-size: 12px; font-weight: 700; background: rgba(96,165,250,0.12); color: var(--c-blue);
+      border: 1px solid rgba(96,165,250,0.25);
+    }
+
+    /* ========== 每日宏观速递 ========== */
+    .macro-section {
+      margin-bottom: 48px; padding: 28px 32px;
+      background: linear-gradient(135deg, rgba(248,113,113,0.05), rgba(251,146,60,0.05));
+      border: 1px solid rgba(248,113,113,0.15); border-radius: 18px;
+    }
+    .macro-section h3 { font-size: 17px; font-weight: 700; color: var(--c-red); margin-bottom: 16px; }
+    .macro-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+    .macro-card {
+      padding: 14px 18px; border-radius: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      font-size: 12.5px; line-height: 1.8; color: #94a3b8;
+    }
+    .macro-card .mc-title { font-weight: 700; color: var(--c-text-heading); margin-bottom: 6px; font-size: 13px; }
+    .macro-card .mc-impact { margin-top: 6px; font-size: 11px; padding: 3px 8px; border-radius: 6px; display: inline-block; }
+    .impact-pos { background: rgba(52,211,153,0.12); color: var(--c-green); }
+    .impact-neg { background: rgba(248,113,113,0.12); color: var(--c-red); }
+    .impact-neu { background: rgba(250,204,21,0.12); color: var(--c-yellow); }
+    .chg-up { color: var(--c-green); font-weight: 600; }
+    .chg-dn { color: var(--c-red); font-weight: 600; }
+
+    /* ========== 周金涛语录 ========== */
+    .jingtao-section {
+      margin-bottom: 48px; padding: 28px 32px;
+      background: linear-gradient(135deg, rgba(167,139,250,0.06), rgba(244,114,182,0.06));
+      border: 1px solid rgba(167,139,250,0.15); border-radius: 18px;
+    }
+    .jingtao-section h3 { font-size: 17px; font-weight: 700; color: var(--c-purple); margin-bottom: 16px; }
+    .quote-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+    .quote-card {
+      padding: 14px 18px; border-radius: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      font-size: 13px; line-height: 1.8; color: #94a3b8;
+    }
+    .quote-card .q { font-style: italic; color: #c4b5fd; margin-bottom: 6px; }
+    .quote-card .mapping { color: #8892b0; font-size: 12px; }
+    .quote-card .mapping strong { color: #60a5fa; }
+
+    /* ========== 标的物价格 ========== */
+    .price-section {
+      margin-bottom: 48px; padding: 28px 32px;
+      background: linear-gradient(135deg, rgba(250,204,21,0.05), rgba(251,146,60,0.05));
+      border: 1px solid rgba(250,204,21,0.15); border-radius: 18px;
+    }
+    .price-section h3 { font-size: 17px; font-weight: 700; color: var(--c-yellow); margin-bottom: 16px; }
+    .price-table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+      border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);
+    }
+    .price-table th {
+      background: rgba(255,255,255,0.05); padding: 10px 12px;
+      font-size: 11.5px; font-weight: 700; text-align: center; color: var(--c-text-table);
+    }
+    .price-table td {
+      padding: 8px 12px; font-size: 12px; line-height: 1.6;
+      border-top: 1px solid var(--c-border-faint); color: var(--c-text-secondary); text-align: center;
+    }
+    .price-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .price-cat { background: rgba(96,165,250,0.06) !important; }
+    .price-cat td { color: #60a5fa !important; font-weight: 700; font-size: 12.5px; }
+    .op-tag {
+      display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600;
+    }
+    .op-buy { background: rgba(52,211,153,0.15); color: #34d399; }
+    .op-hold { background: rgba(250,204,21,0.15); color: #facc15; }
+    .op-wait { background: rgba(96,165,250,0.15); color: #60a5fa; }
+    .op-sell { background: rgba(248,113,113,0.15); color: #f87171; }
+    .op-watch { background: rgba(167,139,250,0.15); color: #a78bfa; }
+
+    /* ========== 腾讯解禁时间表 ========== */
+    .unlock-section {
+      margin-bottom: 48px; padding: 28px 32px;
+      background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(52,211,153,0.06));
+      border: 1px solid rgba(96,165,250,0.15); border-radius: 18px;
+    }
+    .unlock-section h3 { font-size: 17px; font-weight: 700; color: var(--c-blue); margin-bottom: 16px; }
+    .unlock-table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+      border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);
+    }
+    .unlock-table th {
+      background: rgba(255,255,255,0.05); padding: 12px 16px;
+      font-size: 12px; font-weight: 700; text-align: center; color: #8892b0;
+    }
+    .unlock-table td {
+      padding: 10px 16px; font-size: 12.5px; line-height: 1.6;
+      border-top: 1px solid rgba(255,255,255,0.04); color: #a8b8cf; text-align: center;
+    }
+    .unlock-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .unlock-total { background: rgba(52,211,153,0.05) !important; }
+    .unlock-total td { font-weight: 700; color: #f1f5f9 !important; }
+
+    /* ========== 当前盘面 ========== */
+    .panel-title { font-size: 20px; font-weight: 700; color: var(--c-text-heading); margin-bottom: 20px; text-align: center; }
+    .current-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 48px; }
+    .asset-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; padding: 20px; text-align: center; transition: transform 0.2s;
+    }
+    .asset-card:hover { transform: translateY(-3px); }
+    .asset-card .label { font-size: 12px; color: var(--c-text-muted); margin-bottom: 6px; }
+    .asset-card .value { font-size: 24px; font-weight: 800; }
+    .asset-card .tag {
+      display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 10px;
+      font-size: 10px; font-weight: 600;
+    }
+    .tag-a { background: rgba(251,146,60,0.12); color: #fb923c; border: 1px solid rgba(251,146,60,0.25); }
+    .tag-s { background: rgba(52,211,153,0.12); color: #34d399; border: 1px solid rgba(52,211,153,0.25); }
+    .tag-d { background: rgba(96,165,250,0.12); color: #60a5fa; border: 1px solid rgba(96,165,250,0.25); }
+    .tag-f { background: rgba(167,139,250,0.12); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
+    .tag-h { background: rgba(250,204,21,0.12); color: #facc15; border: 1px solid rgba(250,204,21,0.25); }
+    .tag-n { background: rgba(244,114,182,0.12); color: #f472b6; border: 1px solid rgba(244,114,182,0.25); }
+    .tag-t { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.25); }
+    .v-g { color: var(--c-green); } .v-o { color: var(--c-orange); } .v-b { color: var(--c-blue); }
+    .v-p { color: var(--c-purple); } .v-y { color: var(--c-yellow); } .v-r { color: var(--c-red); }
+    .v-pk { color: var(--c-pink); }
+
+    /* ========== 时间轴（月度甘特图式） ========== */
+    .gantt-year {
+      margin-bottom: 36px; padding: 24px 28px;
+      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+    }
+    .gantt-year-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+    .gantt-year-label { font-size: 22px; font-weight: 800; padding: 6px 18px; border-radius: 10px; }
+    .gy-1 { background: rgba(96,165,250,0.12); color: #60a5fa; }
+    .gy-2 { background: rgba(167,139,250,0.12); color: #a78bfa; }
+    .gy-3 { background: rgba(244,114,182,0.12); color: #f472b6; }
+    .gy-4 { background: rgba(251,146,60,0.12); color: #fb923c; }
+    .gy-5 { background: rgba(52,211,153,0.12); color: #34d399; }
+    .gantt-year-title { font-size: 18px; font-weight: 700; color: #f1f5f9; }
+    .gantt-year-meta { font-size: 11px; padding: 3px 10px; border-radius: 10px; background: rgba(255,255,255,0.05); color: #7b8db0; border: 1px solid rgba(255,255,255,0.08); }
+    .month-track { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; margin-bottom: 14px; border-radius: 8px; overflow: hidden; }
+    .month-cell { padding: 6px 2px; text-align: center; font-size: 10px; font-weight: 600; background: rgba(255,255,255,0.03); color: #546380; }
+    .month-cell.mc-cur { background: rgba(52,211,153,0.2); color: #34d399; border: 1px solid rgba(52,211,153,0.4); }
+    .month-cell.mc-evt { background: rgba(248,113,113,0.12); color: #f87171; }
+    .month-cell.mc-money { background: rgba(250,204,21,0.12); color: #facc15; }
+    .month-cell.mc-act { background: rgba(96,165,250,0.08); color: #60a5fa; }
+    .gantt-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; padding: 10px 14px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); }
+    .gantt-month-tag { min-width: 55px; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-align: center; flex-shrink: 0; }
+    .gmt-q1 { background: rgba(96,165,250,0.15); color: #60a5fa; }
+    .gmt-q2 { background: rgba(52,211,153,0.15); color: #34d399; }
+    .gmt-q3 { background: rgba(250,204,21,0.15); color: #facc15; }
+    .gmt-q4 { background: rgba(244,114,182,0.15); color: #f472b6; }
+    .gantt-content { font-size: 12.5px; color: #a8b8cf; line-height: 1.8; }
+    .gantt-content strong { color: #f1f5f9; }
+    .gantt-summary { margin-top: 14px; padding: 12px 18px; border-left: 3px solid; background: rgba(255,255,255,0.02); border-radius: 0 8px 8px 0; font-size: 12.5px; line-height: 1.8; color: #8892b0; }
+    .gs-1 { border-color: #60a5fa; } .gs-2 { border-color: #a78bfa; } .gs-3 { border-color: #f472b6; } .gs-4 { border-color: #fb923c; } .gs-5 { border-color: #34d399; }
+    .gs-6 { border-color: #f87171; } .gs-7 { border-color: #93c5fd; } .gs-8 { border-color: #c4b5fd; }
+    .gy-6 { background: rgba(248,113,113,0.12); color: #f87171; }
+    .gy-7 { background: rgba(96,165,250,0.12); color: #93c5fd; }
+    .gy-8 { background: rgba(167,139,250,0.12); color: #c4b5fd; }
+
+    /* ========== 五幕概览 ========== */
+    .five-acts {
+      margin-bottom: 48px; padding: 28px 32px;
+      background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(167,139,250,0.04), rgba(52,211,153,0.06));
+      border: 1px solid rgba(96,165,250,0.15); border-radius: 18px;
+    }
+    .five-acts h3 { font-size: 18px; font-weight: 700; color: #60a5fa; margin-bottom: 16px; text-align: center; }
+    .acts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .act-card { padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); text-align: center; }
+    .act-card .act-num { font-size: 28px; font-weight: 900; margin-bottom: 4px; }
+    .act-card .act-title { font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+    .act-card .act-age { font-size: 11px; color: #7b8db0; margin-bottom: 6px; }
+    .act-card .act-desc { font-size: 11.5px; color: #94a3b8; line-height: 1.7; }
+
+    /* ========== 家庭支出规划 ========== */
+    .expense-section {
+      margin-top: 48px; padding: 28px;
+      background: linear-gradient(135deg, rgba(244,114,182,0.06), rgba(248,113,113,0.06));
+      border: 1px solid rgba(244,114,182,0.15); border-radius: 16px;
+    }
+    .expense-section h3 { font-size: 18px; font-weight: 700; color: var(--c-pink); margin-bottom: 16px; }
+
+    /* ========== 时间轴（月度甘特图式） ========== */
+    .timeline { padding-left: 52px; position: relative; }
+    .timeline::before {
+      content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(to bottom, #60a5fa, #a78bfa, #f472b6, #fb923c, #34d399);
+      border-radius: 2px;
+    }
+
+    .hl { color: var(--c-text-heading); font-weight: 600; }
+    .warn { color: var(--c-red); font-weight: 600; }
+    .ok { color: var(--c-green); font-weight: 600; }
+    .gold { color: var(--c-yellow); font-weight: 600; }
+    .ticker { color: var(--c-blue); font-weight: 600; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11.5px; }
+    .diff-tag {
+      display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-left: 4px;
+    }
+    .diff-easy { background: rgba(52,211,153,0.15); color: #34d399; }
+    .diff-mid { background: rgba(250,204,21,0.15); color: #facc15; }
+    .diff-hard { background: rgba(251,146,60,0.15); color: #fb923c; }
+    .diff-expert { background: rgba(248,113,113,0.15); color: #f87171; }
+
+    /* ========== 信号系统 ========== */
+    .signal-section {
+      margin-top: 48px; padding: 28px;
+      background: rgba(251,146,60,0.04); border: 1px solid rgba(251,146,60,0.12);
+      border-radius: 16px;
+    }
+    .signal-section h3 { font-size: 18px; font-weight: 700; color: var(--c-orange); margin-bottom: 16px; }
+    .sig-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+    .sig-card {
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 16px;
+    }
+    .sig-card h4 { font-size: 13px; font-weight: 700; color: #fb923c; margin-bottom: 8px; }
+    .sig-card p { font-size: 12px; color: #8892b0; line-height: 1.9; }
+    .trigger { color: #f1f5f9; font-weight: 600; }
+
+    /* ========== 基准镜像组合 ========== */
+    .benchmark-section {
+      margin-top: 48px; padding: 28px;
+      background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.12);
+      border-radius: 16px;
+    }
+    .benchmark-section h3 { font-size: 18px; font-weight: 700; color: #34d399; margin-bottom: 16px; }
+    .benchmark-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+    .bench-card {
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 16px;
+    }
+    .bench-card h4 { font-size: 13px; font-weight: 700; color: #34d399; margin-bottom: 8px; }
+    .bench-card p { font-size: 12px; color: #8892b0; line-height: 1.9; }
+    .bench-card .bench-value { font-size: 20px; font-weight: 700; color: #f1f5f9; }
+    .bench-card .bench-label { font-size: 11px; color: #546380; margin-top: 4px; }
+    .bench-alert { margin-top: 12px; padding: 12px 16px; border-radius: 8px; font-size: 12px; line-height: 1.8; }
+    .bench-alert-green { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); color: #34d399; }
+    .bench-alert-red { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: #f87171; }
+    .bench-alert-gray { background: rgba(84,99,128,0.15); border: 1px solid rgba(84,99,128,0.3); color: #8892b0; }
+
+    /* ========== 保险 ========== */
+    .insurance-section {
+      margin-top: 48px; padding: 28px;
+      background: rgba(244,114,182,0.04); border: 1px solid rgba(244,114,182,0.12);
+      border-radius: 16px;
+    }
+    .insurance-section h3 { font-size: 18px; font-weight: 700; color: var(--c-pink); margin-bottom: 16px; }
+    .insurance-section h4 { font-size: 15px; font-weight: 700; color: #f1f5f9; margin: 24px 0 12px; }
+    .insurance-section h4:first-of-type { margin-top: 8px; }
+    .ins-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .ins-card {
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 16px; text-align: center;
+    }
+    .ins-card .ins-name { font-size: 14px; font-weight: 700; color: #f1f5f9; }
+    .ins-card .ins-detail { font-size: 11.5px; color: #7b8db0; margin-top: 6px; line-height: 1.7; }
+    .ins-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 8px 0 16px; }
+    .ins-table th { padding: 8px 10px; text-align: left; font-weight: 700; color: var(--c-text-heading); border-bottom: 1px solid rgba(244,114,182,0.2); background: rgba(244,114,182,0.06); font-size: 11.5px; }
+    .ins-table td { padding: 7px 10px; border-bottom: 1px solid var(--c-border-faint); color: var(--c-text-table); font-size: 11.5px; line-height: 1.6; }
+    .ins-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .ins-subtotal td { font-weight: 700; color: var(--c-text-heading); border-top: 1px solid rgba(244,114,182,0.15); }
+    .ins-note { font-size: 11.5px; color: var(--c-text-muted); line-height: 1.8; margin-top: 12px; }
+    .ins-warn { color: #f87171; }
+    .ins-ok { color: #34d399; }
+    .ins-info { color: #60a5fa; }
+    .ins-highlight { color: #facc15; }
+
+    /* ========== 人力资本 ========== */
+    .human-cap {
+      margin-top: 48px; padding: 28px;
+      background: rgba(96,165,250,0.04); border: 1px solid rgba(96,165,250,0.12);
+      border-radius: 16px;
+    }
+    .human-cap h3 { font-size: 18px; font-weight: 700; color: var(--c-blue); margin-bottom: 16px; }
+    .hc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+    .hc-card {
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 16px;
+    }
+    .hc-card h4 { font-size: 13px; font-weight: 700; color: #60a5fa; margin-bottom: 8px; }
+    .hc-card p { font-size: 12px; color: #8892b0; line-height: 1.8; }
+
+    /* ========== 资产测算 ========== */
+    .calc-section {
+      margin-top: 48px; padding: 28px;
+      background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.12);
+      border-radius: 16px;
+    }
+    .calc-section h3 { font-size: 18px; font-weight: 700; color: var(--c-green); margin-bottom: 16px; }
+    .calc-table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+      border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);
+    }
+    .calc-table th {
+      background: rgba(255,255,255,0.05); padding: 12px 16px;
+      font-size: 12px; font-weight: 700; text-align: center; color: #8892b0;
+    }
+    .calc-table td {
+      padding: 12px 16px; font-size: 12.5px; line-height: 1.6;
+      border-top: 1px solid rgba(255,255,255,0.04); color: #a8b8cf; text-align: center;
+    }
+    .calc-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .scenario-tag {
+      display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    }
+    .sc-bear { background: rgba(248,113,113,0.12); color: #f87171; }
+    .sc-base { background: rgba(250,204,21,0.12); color: #facc15; }
+    .sc-bull { background: rgba(52,211,153,0.12); color: #34d399; }
+
+    /* ========== 终局 ========== */
+    .endgame {
+      margin-top: 48px;
+      background: linear-gradient(135deg, rgba(52,211,153,0.06), rgba(96,165,250,0.06));
+      border: 1px solid rgba(52,211,153,0.18); border-radius: 20px; padding: 36px; text-align: center;
+    }
+    .endgame h2 { font-size: 24px; font-weight: 800; color: var(--c-green); margin-bottom: 6px; }
+    .endgame .target {
+      font-size: 50px; font-weight: 900;
+      background: linear-gradient(135deg, #34d399, #60a5fa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 14px 0;
+    }
+    .endgame .scenario { font-size: 13px; color: var(--c-text-muted); margin-bottom: 18px; }
+    .end-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 18px; text-align: left; }
+    .end-card {
+      background: rgba(255,255,255,0.04); border-radius: 12px; padding: 18px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .end-card h4 { font-size: 13px; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; }
+    .end-card .pct { font-size: 22px; font-weight: 800; }
+    .end-card .amt { font-size: 12px; color: #7b8db0; margin-top: 3px; }
+    .end-card .income { font-size: 12px; color: #34d399; margin-top: 5px; font-weight: 600; }
+
+    /* ========== 回测教训 ========== */
+    .backtest-section {
+      margin-top: 48px; padding: 28px;
+      background: linear-gradient(135deg, rgba(251,146,60,0.06), rgba(248,113,113,0.06));
+      border: 1px solid rgba(251,146,60,0.15); border-radius: 16px;
+    }
+    .backtest-section h3 { font-size: 18px; font-weight: 700; color: var(--c-orange); margin-bottom: 16px; }
+    .bt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+    .bt-card {
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 16px;
+    }
+    .bt-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+    .bt-card p { font-size: 12px; color: #8892b0; line-height: 1.9; }
+    .bt-good { color: #34d399; } .bt-bad { color: #f87171; } .bt-warn { color: #facc15; }
+    .bt-rule {
+      margin-top: 8px; padding: 8px 12px; border-radius: 6px;
+      background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.15);
+      font-size: 11.5px; color: #60a5fa; line-height: 1.8;
+    }
+
+    /* ========== 私募板块 ========== */
+    .private-section {
+      margin-top: 48px; padding: 28px;
+      background: linear-gradient(135deg, rgba(251,146,60,0.06), rgba(167,139,250,0.06));
+      border: 1px solid rgba(251,146,60,0.15); border-radius: 16px;
+    }
+    .private-section h3 { font-size: 18px; font-weight: 700; color: var(--c-orange); margin-bottom: 16px; }
+    .pv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+    .pv-card {
+      background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 16px;
+    }
+    .pv-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+    .pv-card p { font-size: 12px; color: #8892b0; line-height: 1.8; }
+
+    /* ========== 标的深度分析 ========== */
+    .deep-section {
+      margin-top: 48px; padding: 28px;
+      background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(52,211,153,0.06));
+      border: 1px solid rgba(96,165,250,0.15); border-radius: 16px;
+    }
+    .deep-section h3 { font-size: 18px; font-weight: 700; color: var(--c-blue); margin-bottom: 16px; }
+    .deep-table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+      border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);
+    }
+    .deep-table th {
+      background: rgba(255,255,255,0.05); padding: 10px 12px;
+      font-size: 11px; font-weight: 700; text-align: center; color: #8892b0;
+    }
+    .deep-table td {
+      padding: 8px 10px; font-size: 11.5px; line-height: 1.6;
+      border-top: 1px solid rgba(255,255,255,0.04); color: #a8b8cf; text-align: center;
+    }
+    .deep-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .tier-s { color: var(--c-green); font-weight: 700; } .tier-a { color: var(--c-blue); font-weight: 700; }
+    .tier-b { color: var(--c-yellow); font-weight: 700; } .tier-c { color: var(--c-orange); font-weight: 700; }
+
+    /* ========== 通用信息板块（替代行内样式） ========== */
+    .info-section {
+      margin-bottom: 48px; padding: 28px 32px;
+      border: 1px solid; border-radius: 18px;
+    }
+    .info-section.theme-green {
+      background: linear-gradient(135deg, rgba(52,211,153,0.06), rgba(96,165,250,0.06));
+      border-color: rgba(52,211,153,0.15);
+    }
+    .info-section.theme-yellow {
+      background: linear-gradient(135deg, rgba(250,204,21,0.06), rgba(96,165,250,0.06));
+      border-color: rgba(250,204,21,0.15);
+    }
+    .info-section.theme-red {
+      background: linear-gradient(135deg, rgba(248,113,113,0.06), rgba(251,146,60,0.06));
+      border-color: rgba(248,113,113,0.15);
+    }
+    .info-section h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+    .info-card {
+      padding: 16px; border-radius: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    }
+    .info-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+    .info-card p { font-size: 12px; color: #8892b0; line-height: 1.9; }
+    .info-footer {
+      font-size: 12px; color: #7b8db0; line-height: 1.8;
+      padding: 12px 16px; background: rgba(255,255,255,0.02); border-radius: 8px;
+    }
+
+    /* ========== TOP风险看板 ========== */
+    .risk-section {
+      margin-bottom: 48px; padding: 28px 32px;
+      background: linear-gradient(135deg, rgba(248,113,113,0.08), rgba(251,146,60,0.05));
+      border: 2px solid rgba(248,113,113,0.25); border-radius: 18px;
+    }
+    .risk-section h3 { font-size: 17px; font-weight: 700; color: var(--c-red); margin-bottom: 16px; }
+    .risk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+    .risk-card {
+      padding: 16px; border-radius: 10px;
+      background: rgba(248,113,113,0.04); border: 1px solid rgba(248,113,113,0.12);
+    }
+    .risk-card .risk-level {
+      display: inline-block; padding: 2px 8px; border-radius: 6px;
+      font-size: 10px; font-weight: 700; margin-bottom: 8px;
+    }
+    .risk-high { background: rgba(248,113,113,0.2); color: #f87171; }
+    .risk-med { background: rgba(251,146,60,0.2); color: #fb923c; }
+    .risk-low { background: rgba(250,204,21,0.2); color: #facc15; }
+    .risk-card h4 { font-size: 13px; font-weight: 700; color: var(--c-text-heading); margin-bottom: 6px; }
+    .risk-card p { font-size: 12px; color: #94a3b8; line-height: 1.8; }
+
+    /* ========== 表格滚动容器 ========== */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; }
+
+    /* ========== 幕间分隔（替代行内样式） ========== */
+    .act-divider {
+      text-align: center; margin: 24px 0 12px; padding: 8px; border-radius: 10px;
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 20px 10px; }
+      .current-panel { grid-template-columns: repeat(2, 1fr); }
+      .end-grid { grid-template-columns: repeat(2, 1fr); }
+      .header h1 { font-size: 24px; }
+      .phase-title { font-size: 17px; }
+      .endgame .target { font-size: 36px; }
+      .month-track { grid-template-columns: repeat(6, 1fr); }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .container { max-width: 100%; }
+      .macro-grid { grid-template-columns: 1fr; }
+      .sig-grid { grid-template-columns: 1fr; }
+      .acts-grid { grid-template-columns: repeat(2, 1fr); }
+      .bt-grid { grid-template-columns: 1fr; }
+      .pv-grid { grid-template-columns: 1fr; }
+      .hc-grid { grid-template-columns: 1fr; }
+      .risk-grid { grid-template-columns: 1fr; }
+      .gantt-row { flex-direction: column; }
+      .gantt-month-tag { min-width: auto; align-self: flex-start; }
+      .price-section, .deep-section, .unlock-section { padding: 20px 16px; }
+      /* exec-bar 小屏优化：两列展示 */
+      .exec-bar { grid-template-columns: repeat(2, 1fr); }
+      /* 表格横向滚动提示 */
+      .table-wrap { position: relative; }
+      .table-wrap::after {
+        content: '← 左右滑动 →';
+        display: block; text-align: center; font-size: 10px; color: #546380;
+        padding: 4px 0; opacity: 0.6;
+      }
+    }
+    @media (max-width: 500px) {
+      .current-panel { grid-template-columns: 1fr; }
+      .end-grid { grid-template-columns: 1fr; }
+      .acts-grid { grid-template-columns: 1fr; }
+      .month-track { grid-template-columns: repeat(4, 1fr); }
+      /* 移动端字号优化：10px→12px 确保可读性 */
+      .exec-cell .ec-label { font-size: 11px; }
+      .exec-cell .ec-sub { font-size: 11px; }
+      .month-cell { font-size: 11px; }
+      #tocNav a { font-size: 11px; }
+      .asset-card .badge { font-size: 11px; }
+      .asset-card .label { font-size: 13px; }
+      .asset-card .val { font-size: 16px; }
+      /* 卡片内文字最小 12px */
+      .sig-card p, .bench-card p, .bt-card p, .pv-card p, .info-card p,
+      .hc-card p, .risk-card p { font-size: 13px; }
+      /* 表格字号 */
+      .ins-table { font-size: 13px; }
+      .price-table { font-size: 12px; }
+      /* 触摸目标增大 */
+      .exec-cell { padding: 16px 12px; }
+      .collapsible-header { padding: 14px 16px; min-height: 44px; }
+      /* 标题适配 */
+      .header h1 { font-size: 20px; }
+      .header .subtitle { font-size: 12px; }
+      .phase-title { font-size: 15px; }
+    }
+    @media print {
+      body { background: #fff; color: #1a1a1a; padding: 20px; }
+      .container { max-width: 100%; }
+      /* 所有卡片统一打印样式 */
+      .asset-card, .info-card, .risk-card, .macro-card, .quote-card, .sig-card, .bt-card, .pv-card, .hc-card, .act-card, .ins-card, .end-card, .action-card, .gantt-row {
+        border: 1px solid #ddd; background: #f9f9f9; color: #1a1a1a;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      /* 渐变文字还原为实色 */
+      .header h1 { -webkit-text-fill-color: #1a1a1a; background: none; }
+      .endgame .target { -webkit-text-fill-color: #1a1a1a; background: none; }
+      /* section 背景还原 */
+      .macro-section, .jingtao-section, .price-section, .unlock-section, .five-acts,
+      .signal-section, .benchmark-section, .insurance-section, .human-cap, .calc-section, .endgame,
+      .backtest-section, .private-section, .deep-section, .info-section, .risk-section,
+      .expense-section, .exec-bar, .zone-divider {
+        background: #fafafa; border-color: #ccc;
+      }
+      .ref-zone { opacity: 1 !important; }
+      .ref-zone * { opacity: 1 !important; }
+      /* 各section标题色变黑 */
+      .macro-section h3, .jingtao-section h3, .price-section h3, .unlock-section h3,
+      .signal-section h3, .benchmark-section h3, .insurance-section h3, .human-cap h3, .calc-section h3,
+      .endgame h2, .backtest-section h3, .private-section h3, .deep-section h3,
+      .info-section h3, .risk-section h3, .expense-section h3, .five-acts h3 {
+        color: #1a1a1a;
+      }
+      /* 文字颜色统一可读 */
+      .gantt-content, .gantt-content strong, .gantt-summary,
+      .info-card p, .info-card h4, .sig-card p, .sig-card h4,
+      .bt-card p, .bt-card h4, .pv-card p, .pv-card h4,
+      .hc-card p, .hc-card h4, .macro-card, .quote-card .q,
+      .quote-card .mapping, .ins-card .ins-detail,
+      .bench-card p, .bench-card h4,
+      .risk-card p, .risk-card h4,
+      .act-card .act-desc, .act-card .act-title,
+      .asset-card .label, .asset-card .value,
+      .end-card h4, .end-card .amt, .end-card .income {
+        color: #1a1a1a;
+      }
+      /* 表格打印 */
+      .price-table td, .price-table th, .unlock-table td, .unlock-table th,
+      .calc-table td, .calc-table th, .deep-table td, .deep-table th {
+        color: #1a1a1a; border-color: #ccc;
+      }
+      /* 隐藏下载按钮和导航 */
+      #downloadBtn, #tocNav { display: none !important; }
+      body { padding-left: 0 !important; }
+      /* 避免分页 */
+      .gantt-year, .sig-card, .bt-card, .pv-card, .info-card, .risk-card, .act-card, .hc-card, .ins-card, .end-card, .macro-card, .quote-card { break-inside: avoid; }
+    }
+
+    /* ========== 常驻侧边导航 ========== */
+    #tocNav {
+      position: fixed; left: 0; top: 50%; transform: translateY(-50%);
+      z-index: 9997; display: flex; flex-direction: column; gap: 2px;
+      padding: 10px 0 10px 0;
+      background: rgba(8,12,31,0.88); border-right: 1px solid rgba(96,165,250,0.18);
+      border-radius: 0 14px 14px 0; backdrop-filter: blur(14px);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.35);
+      max-height: 85vh; overflow-y: auto;
+    }
+    #tocNav::-webkit-scrollbar { width: 0; }
+    #tocNav a {
+      display: block; padding: 5px 14px 5px 12px; font-size: 11.5px; color: #8892b0;
+      text-decoration: none; white-space: nowrap; transition: all 0.15s;
+      line-height: 1.5; border-left: 3px solid transparent;
+    }
+    #tocNav a:hover {
+      color: #60a5fa; background: rgba(96,165,250,0.1);
+      border-left-color: #60a5fa;
+    }
+    #tocNav a .nav-icon { display: inline-block; width: 18px; text-align: center; margin-right: 4px; font-size: 12px; }
+    @media (max-width: 768px) {
+      #tocNav {
+        top: auto; bottom: 0; left: 0; right: 0; transform: none;
+        flex-direction: row; border-radius: 14px 14px 0 0;
+        border-right: none; border-top: 1px solid rgba(96,165,250,0.18);
+        max-height: none; overflow-x: auto; overflow-y: hidden;
+        padding: 6px 8px; gap: 0; justify-content: center; flex-wrap: wrap;
+        box-shadow: 0 -4px 24px rgba(0,0,0,0.35);
+      }
+      #tocNav a { padding: 4px 8px; font-size: 10px; border-left: none; border-bottom: 2px solid transparent; }
+      #tocNav a:hover { border-left-color: transparent; border-bottom-color: #60a5fa; }
+      body { padding-bottom: 60px; }
+    }
+    @media (min-width: 769px) {
+      body { padding-left: 140px; }
+    }
+
+    /* ========== 状态总览条（Executive Bar） ========== */
+    .exec-bar {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 2px; margin-bottom: 32px; border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(96,165,250,0.2);
+      background: rgba(96,165,250,0.04);
+    }
+    .exec-cell {
+      padding: 14px 12px; text-align: center;
+      background: rgba(255,255,255,0.02);
+    }
+    .exec-cell .ec-label { font-size: 10px; color: #546380; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .exec-cell .ec-value { font-size: 20px; font-weight: 800; }
+    .exec-cell .ec-sub { font-size: 10px; color: #7b8db0; margin-top: 3px; }
+
+    /* ========== 仪表盘/手册分割带 ========== */
+    .zone-divider {
+      margin: 48px 0 36px;
+      padding: 14px 24px;
+      text-align: center;
+      background: linear-gradient(90deg, transparent, rgba(96,165,250,0.08), transparent);
+      border-top: 1px solid rgba(96,165,250,0.15);
+      border-bottom: 1px solid rgba(96,165,250,0.15);
+    }
+    .zone-divider .zd-title {
+      font-size: 13px; font-weight: 700; color: #60a5fa;
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    .zone-divider .zd-hint {
+      font-size: 11px; color: #546380; margin-top: 4px;
+    }
+
+    /* ========== 手册层 —— 降低视觉权重 ========== */
+    .ref-zone .signal-section,
+    .ref-zone .benchmark-section,
+    .ref-zone .deep-section,
+    .ref-zone .unlock-section,
+    .ref-zone .info-section,
+    .ref-zone .private-section,
+    .ref-zone .five-acts,
+    .ref-zone .insurance-section,
+    .ref-zone .human-cap,
+    .ref-zone .calc-section,
+    .ref-zone .backtest-section,
+    .ref-zone .expense-section,
+    .ref-zone .timeline {
+      opacity: 0.92;
+    }
+    .ref-zone h3 {
+      font-size: 15px;
+    }
+    .ref-zone .sig-card,
+    .ref-zone .bench-card,
+    .ref-zone .pv-card,
+    .ref-zone .hc-card,
+    .ref-zone .bt-card,
+    .ref-zone .ins-card,
+    .ref-zone .info-card {
+      padding: 13px;
+    }
+
+    /* ========== details 折叠美化 ========== */
+    details.fold-section {
+      margin-top: 8px;
+      border-radius: 8px;
+    }
+    details.fold-section > summary {
+      font-size: 12px; font-weight: 600; color: #60a5fa;
+      cursor: pointer; padding: 6px 0; list-style: none;
+      display: flex; align-items: center; gap: 6px;
+    }
+    details.fold-section > summary::before {
+      content: '▸'; display: inline-block; transition: transform 0.2s; font-size: 10px;
+    }
+    details.fold-section[open] > summary::before {
+      transform: rotate(90deg);
+    }
+    details.fold-section > summary::-webkit-details-marker { display: none; }
+
+    /* ========== 宏观速递精简模式 ========== */
+    .macro-summary {
+      font-size: 12.5px; line-height: 1.8; color: #a8b8cf;
+      padding: 14px 18px; border-radius: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    }
+    /* ====== 数据一致性自检 ====== */
+    #consistency-alert { display:none; position:sticky; top:0; z-index:9999; padding:10px 18px; background:#991b1b; color:#fca5a5; font-size:12px; line-height:1.7; border-bottom:2px solid #f87171; }
+    #consistency-alert strong { color:#fff; }
+    .data-mismatch { outline:2px dashed #f87171 !important; outline-offset:2px; }
+  </style>
+</head>
+<body>
+
+<!-- ===== 数据一致性自检：单一数据源（SSOT） ===== -->
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  🔴 AI必读：这是全页面价格更新的第一步（§12.D1）              ║ -->
+<!-- ║  每次更新价格/盈亏时，必须首先更新下方 data-* 属性值          ║ -->
+<!-- ║  然后再更新 Exec Bar → Dashboard → Price → Benchmark → Risk   ║ -->
+<!-- ║  跳过此步骤=页面红色报错（教训㊴）                             ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+<!-- BEGIN:ssot -->
+<div id="data-ssot" style="display:none"
+  data-date="2/26"
+  data-portfolio-value="$8,328"
+  data-portfolio-cost="$8,304"
+  data-portfolio-gain="+0.29%"
+  data-portfolio-gain-usd="+$24"
+  data-nvda-price="$185"
+  data-avgo-price="$322"
+  data-vt-price="$148"
+  data-qqq-price="$609"
+  data-vix="18.63"
+  data-cape="40.19"
+  data-usdcny="6.855"
+  data-nvda-earnings-countdown="Q4已公布·下次5/20"
+  data-benchmark-value="$8,414"
+  data-benchmark-gain="+1.32%"
+  data-alpha="-1.03%"
+></div>
+<!-- END:ssot -->
+<div id="consistency-alert"></div>
+
+<div class="container">
+
+  <!-- ========== 标题 ========== -->
+  <div class="header">
+    <h1>全生命周期资产操作全景图</h1>
+    <div class="subtitle">2026 → 2065 ｜ 31岁 → 70岁 ｜ 五幕人生 · 康波驱动 · 信号纠偏 · 全周期覆盖<br>预产期：2026年4月20日 · 人生新篇章开启</div>
+    <!-- BEGIN:version-info -->
+<div class="version">20260227-v5.23 · A-type价格修正更新·MCP数据源校准(AVGO $310→$322/NVDA $187→$185)+港股2/27盘中·组合$8,328(+0.29%)·Alpha -1.03%·AVGO浮亏收窄至-2.1% · Rules-v7.5同步</div>
+    <details style="margin-top:4px;text-align:center;">
+      <summary style="font-size:10px;color:#546380;cursor:pointer;display:inline;">变更日志</summary>
+      <div style="font-size:10px;color:#546380;margin-top:4px;">v5.23：A-type价格修正更新（美股2/26收盘MCP校准+港股2/27盘中）——AVGO修正$310→$322(上版数据源偏差$12)·NVDA修正$187→$185·组合$8,328(+0.29%·转正!)·Alpha从-1.46%收窄至-1.03%·MDD从3.0%降至2.4%·VIX降至18.63(-5%)·CAPE微降至40.19·金矿GDX逼近52周高$114·港股反弹腾讯+3.0%·AVGO浮亏收窄至-2.1%(3/4财报倒计时4交易日) · Rules-v7.5同步<br>v5.22：A-type全量价格更新（2/26四收盘）——科技暴跌日NVDA-4.7%($187)/AVGO-6.7%($310)/QQQ-1.5%/MU-5.0%·VIX升至19.62(+9.4%)·GLD $476(+0.5%坚挺)·组合$8,274(-0.36%·从新高$8,533回撤3.0%)·Alpha转负-1.46%·<strong>GLD占比首次达到3.0%目标！</strong> · Rules-v7.5同步<br>v5.21：C-type规则更新——Skills自动化（5个斜杠命令：/update-prices/audit/new-session/watchlist/scan）+MCP数据层（stockquotes-mcp Yahoo Finance价格服务器）+教训生命周期管理（活跃→稳定→归档·控制Rules体积） · Rules-v7.5同步<br>v5.20：C-type规则更新——TSM/MU建仓条件方案B（教训㊲落地）：TSM从"$340-350"改为"52周高点回撤≥10%"·MU从"$350-"改为"回撤≥15%"（绝对价格阈值→自适应百分比信号·信号>预测哲学一致） · Rules-v7.4同步<br>v5.19：A-type全量价格更新（2/25→2/26）——NVDA财报后首日+1.4%（反应温和·符合预期beat）+AVGO反弹+2.1%（W3缓和）+科技全面上涨QQQ+1.5%+VIX暴降至17.93(-8.3%)·<strong>GLD 0.5212股@$469.99 2/24已买入（对冲层首次建仓！GLD占比2.9%·接近3%底线）</strong>·组合$8,533创新高(+2.76%)·Alpha+1.18% · Rules-v7.3同步</div>
+    </details>
+    <!-- END:version-info -->
+  </div>
+
+  <!-- ========== 状态总览条（Executive Bar） ========== -->
+  <!-- BEGIN:exec-bar -->
+<div class="exec-bar">
+    <div class="exec-cell">
+      <div class="ec-label">总资产</div>
+      <div class="ec-value v-pk">83.8万</div>
+      <div class="ec-sub">年末目标 157-167万</div>
+    </div>
+    <div class="exec-cell">
+      <div class="ec-label">当前幕</div>
+      <div class="ec-value v-b">第一幕</div>
+      <div class="ec-sub">31岁 · 播种进攻</div>
+    </div>
+    <div class="exec-cell">
+      <div class="ec-label">持仓盈亏</div>
+      <div class="ec-value v-g" data-check="portfolio-gain">+0.29%</div>
+      <div class="ec-sub" data-check="portfolio-value;portfolio-cost">$8,328 / 成本$8,304 · ①②批+GLD已建</div>
+    </div>
+    <div class="exec-cell">
+      <div class="ec-label">信号灯</div>
+      <div class="ec-value" style="font-size:16px">减仓<span style="color:#facc15"> 1</span>/7 · 避险<span style="color:#34d399"> 0</span>/6</div>
+      <div class="ec-sub">正常建仓区间</div>
+    </div>
+    <div class="exec-cell">
+      <div class="ec-label">下一步操作</div>
+      <div class="ec-value" style="font-size:14px;color:#a78bfa">③批种子仓</div>
+      <div class="ec-sub">4月中旬兜底 · QQQ≤$573加速</div>
+    </div>
+    <div class="exec-cell">
+      <div class="ec-label">关键日期</div>
+      <div class="ec-value" style="font-size:14px;color:#fb923c" data-check="nvda-earnings-countdown">Q4已公布·下次5/20</div>
+      <div class="ec-sub">4/20 预产期</div>
+    </div>
+  </div>
+  <!-- END:exec-bar -->
+
+  <!-- ========== 每日宏观速递 ========== -->
+  <div class="macro-section" id="sec-macro">
+    <!-- BEGIN:macro-title -->
+    <h3>📡 每日宏观速递（v5.23 · 数据基准：美股2/26(四)收盘+港股2/27(五)盘中 · MCP数据源校准+港股更新 · A-type价格修正更新）</h3>
+    <!-- END:macro-title -->
+
+    <!-- 精简结论 -->
+    <!-- BEGIN:macro-conclusion -->
+    <div class="macro-summary">
+      <strong style="color:#f1f5f9">结论：</strong><strong style="color:#60a5fa">MCP数据源校准——AVGO修正$310→$322(上版偏差$12)·NVDA修正$187→$185。</strong>VIX降至18.63（较上版19.62降5%·回到<19正常偏低区间）。CAPE 40.19（较40.42微降·减仓1/7维持）。<strong style="color:#34d399">GLD $477(+0.3%续涨)·金矿GDX $114逼近52周高(+2.5%)。</strong>港股2/27反弹：腾讯+3.0%至HK$528·阿里+1.0%·美团-0.8%续弱。USD/CNY 6.855（较6.840微升·仍处52周低位极佳换汇区间）。<strong style="color:#34d399">组合$8,328(+0.29%·转正!)·Alpha从-1.46%收窄至-1.03%·MDD从3.0%降至2.4%。</strong>
+    </div>
+    <!-- END:macro-conclusion -->
+
+    <!-- 详情折叠 -->
+    <details class="fold-section" open style="margin-top:12px;">
+      <summary>10 条宏观详情</summary>
+      <div class="macro-grid" style="margin-top:10px;">
+        <div class="macro-card">
+          <div class="mc-title">🗓️ 2/26美股周四科技暴跌 · S&P -0.8% · QQQ -1.5% · VIX升至19.62(+9.4%)</div>
+          美股2/26(四)科技股大幅回调。S&P -0.79%收6,891、QQQ -1.51%收$607.11、SPY $687.68(-0.79%)。科技股全面暴跌：NVDA-4.7%·AVGO-6.7%·MU-5.0%·TSM-3.6%·AMD-3.8%·ANET-2.7%。少数个股逆势上涨：CRM+3.3%（财报发布）·MSFT+0.2%。<strong style="color:#f87171">VIX升至19.62（+9.42%·恐慌回升但仍在正常区间<20）。</strong>债券微涨（TLT+0.2%·BND+0.07%·避险）。
+          <br><span class="mc-impact impact-neg">科技暴跌·QQQ-1.5%</span> <span class="mc-impact impact-neg">VIX 19.62回升·恐慌增加</span>
+        </div>
+        <div class="macro-card">
+          <div class="mc-title">📊 VIX升至19.62(+9.4%) · CAPE 40.42持平 · 10Y ~4.05%</div>
+          VIX 19.62（+9.42%回升·但仍<20正常区间·非恐慌水平）。CAPE 40.42（持平·减仓信号1/7维持——仍>38）。10Y国债收益率~4.05%持平。联邦基金利率3.64%（在3.50-3.75%目标区间内）。
+          <br><span class="mc-impact impact-neg">VIX升至19.62·情绪恶化</span> <span class="mc-impact impact-neg">CAPE 40.42·减仓信号维持</span>
+        </div>
+        <div class="macro-card">
+          <div class="mc-title">🤖 NVDA财报后第二日暴跌-4.7% · AVGO-6.7% · MU-5.0% · TSM-3.6%</div>
+          <strong style="color:#f87171">NVDA $186.52（-4.66%·财报后第二日大幅回吐——前日温和+1.4%被完全抹去）。</strong>AVGO $310.21（-6.65%暴跌·<strong style="color:#f87171">3/4财报前一周·W3乙方风险压力上升</strong>）。MU $407.70（-4.96%大跌）。TSM $373.74（-3.61%）。AMD $202.75（-3.84%）。<strong style="color:#f87171">11.93股NVDA·均价$185.31 → 市值$2,225·浮盈缩水至+$14(+0.64%)</strong>。<strong style="color:#f87171">5.36股AVGO·均价$328.40 → 市值$1,663·浮亏-$99(-5.63%)</strong>
+          <br><span class="mc-impact impact-neg">NVDA-4.7%·财报利好被回吐</span> <span class="mc-impact impact-neg">AVGO-6.7%·3/4财报前暴跌</span>
+        </div>
+        <div class="macro-card">
+          <div class="mc-title">🥇 黄金避险坚挺：GLD $476(+0.5%) · 金期货$5,204 · 科技跌黄金涨</div>
+          GLD $475.84（+0.51%·科技暴跌日避险坚挺）。金期货$5,204/oz（-0.42%微跌·仍在$5,200上方高位）。2840.HK HK$3,720（-0.19%持平）。<strong style="color:#34d399">GLD占比首次达到3.0%目标！（$248/$8,274=3.0%）——科技暴跌日黄金相对坚挺，正是对冲层存在的意义。</strong>
+          <br><span class="mc-impact impact-pos">GLD+0.5%避险坚挺</span> <span class="mc-impact impact-pos">GLD占比3.0%首次达标！</span>
+        </div>
+        <div class="macro-card">
+          <div class="mc-title">🏦 Fed 3.50-3.75%维持 · CAPE 40.42 · VIX 19.62回升</div>
+          CAPE 40.42持平（减仓信号1/7维持——仍>38·接近历史高位44.19）。VIX 19.62回升但仍<20（非恐慌水平）。10Y国债~4.05%持平。CRM Q4财报盘后公布（+3.3%盘中上涨）。
+          <br><span class="mc-impact impact-neg">CAPE 40.42·估值偏高</span> <span class="mc-impact impact-neg">VIX 19.62回升</span>
+        </div>
+        <div class="macro-card">
+          <div class="mc-title">🇨🇳 港股腾讯大跌-2.0% · 阿里-3.6% · 中概全面回调</div>
+          港股2/26：腾讯HK$512.00（-2.01%大跌）、阿里9988 HK$143.00（-3.57%暴跌）。KWEB $31.43（-2.51%中概全面回调）。A股：长江电力¥26.04（+0.27%持平）、神华¥41.83（-0.83%微跌）。
+          <br><span class="mc-impact impact-neg">腾讯-2.0%·阿里-3.6%</span> <span class="mc-impact impact-neg">中概全面回调</span>
+        </div>
+        <div class="macro-card">
+          <div class="mc-title">💱 USD/CNY 6.840续创52周新低！ · USD/HKD 7.823 · 换汇窗口持续极佳</div>
+          USD/CNY 6.840（较上版6.848继续下降·<strong style="color:#34d399">再创52周新低！人民币持续走强</strong>·换汇极划算）。USD/HKD 7.823（稳定）。
+          <br><span class="mc-impact impact-pos">换汇窗口极佳·CNY 6.840再创新低</span>
+        </div>
+        <div class="macro-card">
+          <div class="mc-title">📉 组合$8,274(-0.36%) · 从新高$8,533回撤3.0% · MDD 3.0%</div>
+          <strong style="color:#f87171">组合从历史新高$8,533回撤至$8,274，MDD 3.04%。</strong>AVGO-6.7%是最大拖累（5.36股×-$22.10=-$118.5单日损失）。NVDA-4.7%拖累-$108。GLD+0.5%和VT-0.6%提供缓冲。<strong style="color:#34d399">MDD 3.0%远低于25%冻结线·无需恐慌。</strong>科技暴跌日正是检验框架纪律的时刻：信号仍为1/7正常建仓区间，不改变任何操作计划。
+          <br><span class="mc-impact impact-neg">组合-0.36%·MDD 3.0%</span> <span class="mc-impact impact-pos">远低于25%冻结线·纪律不变</span>
+        </div>
+        <div class="macro-card">
+          <div class="mc-title">⚖️ Alpha转负-1.46% · 基准$8,396(+1.10%) > 实际$8,274(-0.36%)</div>
+          Alpha从+1.18%急转至-1.46%。根因：赛道集中科技在暴跌日放大损失，而基准VT全球分散+BNDW债券避险受损更小。<strong style="color:#546380">⚠️ 建仓仅22天+单日暴跌放大了集中仓位的波动——Alpha暂不具备参考意义，但趋势需要观察。</strong>框架复审触发条件是"连续12个月跑输"，远未到达。
+          <br><span class="mc-impact impact-neg">Alpha-1.46%·主动管理暂时跑输</span> <span class="mc-impact impact-neu">建仓仅22天·波动属正常</span>
+        </div>
+        <div class="macro-card">
+          <div class="mc-title">🔮 3/4 AVGO财报倒计时6天 · AVGO-6.7%财报前暴跌 · W3乙方风险升压</div>
+          AVGO 3/4盘后财报仅剩6天，今日暴跌-6.7%加大了财报前的不确定性。W3乙方风险从"缓和"回到"关注升压"——AVGO已跌破成本线$328.40（当前$310.21·浮亏-5.63%）。<strong style="color:#fb923c">下一个关键：3/4 AVGO财报——验证AI ASIC营收增速、定制芯片需求、乙方客户集中度。</strong>MU 3/18财报（W5 HBM份额确认）。NVDA下次财报5/20。
+          <br><span class="mc-impact impact-neg">AVGO财报前暴跌-6.7%</span> <span class="mc-impact impact-neu">3/4财报为W3关键验证</span>
+        </div>
+      </div>
+    </details>
+
+    <!-- 视野扫描（§5.7·外部视野扫描协议·v5.3新增） -->
+    <details class="fold-section" style="margin-top:12px;">
+      <summary>🔭 视野扫描（v5.21 · 6维度·新增AI价值栈层间传导 · Taalas HC1评估(L0忽略) · 灰色监控+1(ANET) · 观察池 1 项）</summary>
+      <div style="margin-top:10px;">
+        <div style="font-size:12px;color:#7b8db0;line-height:1.8;margin-bottom:10px;">
+          <strong style="color:#a78bfa">观察池（L1）：</strong>
+          <span style="color:#fb923c">⚠️ <strong>HBM赛道份额集中化（2/26新增）：</strong>SK海力士(000660.KS)3个月+99%·三星(005930.KS)3个月+110%，均创52周新高。同期MU仅+40%。市场定价"SK海力士HBM领跑+三星追赶成功"→三足鼎立格局从均势转向"SK海力士+三星双强·MU第三"。<strong style="color:#f1f5f9">影响：</strong>不需要新增标的（韩股交易限制+AI/半导体敞口已满+VT已含韩国被动暴露），但MU建仓前须额外确认HBM份额未被挤压（W5辅助条件）。等MU下次财报（3月下旬）确认。</span><br>
+          <span style="color:#546380">AI disruption fears导致软件/SaaS股大跌（PANW -2%，CRWD -3.6%，CDNS -5.3%），但这是应用层泡沫挤压而非基础设施层风险——实际上利好我们的"铲子卖家"thesis。</span>
+        </div>
+        <div style="font-size:11px;color:#546380;line-height:1.6;">
+          <strong>本期扫描（6维度）：</strong>
+          ① 邻近赛道：软件/SaaS股因AI disruption fears下跌（应用层被替代风险↑），不影响NVDA/AVGO铲子层 ｜
+          ② 新ETF/工具：无相关新上市AI/半导体ETF ｜
+          ③ 资本流向：RIVN +26%（EV回暖）、COIN +16%（BTC $68K反弹）——均不在我们赛道 ｜
+          ④ 监管政策：<strong style="color:#f87171">🔴 关税从13.5%升至15%</strong>（最高法院裁定违法后Trump重设）+半导体Section 232关税大厂豁免不变+Meta $6500万游说阻止州级AI监管 ｜
+          ⑤ 技术路线：<strong>Taalas HC1（2/19·加拿大）</strong>——模型权重蚀刻进ROM的极端推理ASIC，17K tok/s但零灵活性+仅验证8B参数。L2层内特化分支，不构成路线分叉（NVDA Rubin/AVGO ASIC通用路线不变）<br>
+          ⑥ <strong style="color:#60a5fa">AI价值栈层间传导（v7.1新增）：</strong>黄仁勋五层模型（L1电力→L2芯片→L3基建→L4模型→L5应用）——我们在L2，需监控上下游。<span style="color:#34d399">L3基建层：</span>五大科技capex仍正增长（L3健康）+数据中心排队持续+ANET $133（网络互连需求强劲）。<span style="color:#34d399">L4模型层：</span>训练/推理比尚在~70:30·Jevons悖论暂时成立（DeepSeek后总算力需求仍扩大）。<span style="color:#fb923c">L5应用层：</span>AI Agent渗透率仍<5%·<strong>NYT报道公众对AI热潮反应冷淡（对比dot-com时期热情明显不足）</strong>·大规模爆发时间可能比预期更晚。<strong style="color:#a78bfa">L5验证信号（2/26·L0忽略）：</strong>Tempus AI(TEM·医疗AI精准诊疗)被佩洛西/黄仁勋/特朗普/段永平/格林/木头姐六人交叉持仓——聪明钱押注L5医疗垂直应用，间接验证L5渗透正在发生=L2芯片有真实终端需求。TEM本身不纳入观察（L5应用层·亏损·年化波动61%·与铲子thesis无协同），但作为L5健康度信号记录。<strong>结论：L3/L4健康，L5渗透节奏可能放缓但不影响L2基础设施需求。</strong>
+        </div>
+        <div style="font-size:10px;color:#546380;margin-top:8px;line-height:1.5;">
+          💡 <strong>已升级至灰色监控（L2）：</strong>⚡ 电力/数据中心基础设施（VST/CEG/NEE/EQIX · v5.2纳入 · 来源：用户外部信号→电力是AI命门） ｜ 🔗 L3基建层网络互连（ANET · v5.13纳入 · 来源：黄仁勋五层理论→L3健康度代理变量）<br>
+          📡 <strong>双通道输入：</strong>AI每次更新主动扫描 + 用户随时分享现实世界观察（§5.7·宁可多报不可漏报）<br>
+          🔄 <strong>漏斗：</strong>L0忽略 → L1观察（文字记录）→ L2灰色监控（价格面板灰色行）→ L3正式纳入（核心标的池）
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ========== TOP风险看板 ========== -->
+  <!-- BEGIN:risk-board -->
+  <!-- ========== TOP风险看板 ========== -->
+  <div class="risk-section" id="sec-risk">
+    <h3>🚨 当前 TOP 风险看板（一眼聚焦最紧迫风险 · 详情见宏观速递）</h3>
+    <div class="risk-grid">
+      <div class="risk-card">
+        <span class="risk-level risk-low">有利</span>
+        <h4>💱 汇率6.855 · 换汇窗口极佳（52周低位区间）</h4>
+        <p>USD/CNY 6.855，仍处52周低位极佳换汇区间（52周低6.841）。<br><strong style="color:#f1f5f9">应对：</strong>月结余可积极分批换入USD。</p>
+      </div>
+      <div class="risk-card">
+        <span class="risk-level risk-med">中风险</span>
+        <h4>📊 VIX 18.63回落 · CAPE 40.19微降 · 波动率正常化</h4>
+        <p>VIX 18.63（较上版19.62降5%·回到正常偏低区间）。CAPE 40.19（较40.42微降·减仓信号1/7维持——仍>38）。<br><strong style="color:#f1f5f9">应对：</strong>VIX 18.63远低于35加仓阈值。CAPE 40.19（1/7减仓信号=正常建仓不受影响）。</p>
+      </div>
+      <div class="risk-card">
+        <span class="risk-level risk-low">已完成</span>
+        <h4>📊 种子仓①②批+GLD已建仓 · GLD 3%达标 · ③批等待</h4>
+        <p>①批$4,347（2/7）+②批$3,712（2/17）+GLD $245（2/24）已完成，合计$8,304。持仓：NVDA+AVGO+QQQ+VT+GLD五标的。GLD占比3.0%维持目标。<br><strong style="color:#f1f5f9">下一步：</strong>③批~3万HKD——时间底线4月中旬，QQQ≤$573则提前。配比：VT $1,300+NVDA $400+AVGO $400+替代标的统一改VT。</p>
+      </div>
+      <div class="risk-card">
+        <span class="risk-level risk-med">关注</span>
+        <h4>🇺🇸 AVGO -2.1%浮亏·3/4财报倒计时4个交易日·W3验证</h4>
+        <p>AVGO $321.70（MCP校准·较上版$310上修$12）。浮亏收窄至-2.14%（成本$328.40）。3/4财报倒计时4个交易日——W3乙方风险关键验证点。<br><strong style="color:#f1f5f9">应对：</strong>关注3/4 AVGO财报AI收入占比和客户集中度。财报前不操作。</p>
+      </div>
+      <div class="risk-card">
+        <span class="risk-level risk-low">未触发</span>
+        <h4>🔄 赛道扩展触发监控（AI infra产能过剩对冲）</h4>
+        <p>标的池集中于AI infra层（NVDA+AVGO已建仓+TSM+MU事件驱动候选·未建仓）。<strong style="color:#60a5fa">黄仁勋五层视角：</strong>我们在L2芯片层。四个扩展触发条件均未触发。<br><strong style="color:#f1f5f9">现阶段：</strong>不加仓位。VT已提供结构性分散+GLD 3%保障对冲层。</p>
+      </div>
+      <div class="risk-card">
+        <span class="risk-level risk-med">关注</span>
+        <h4>⚠️ AVGO乙方风险W3 · Meta-AMD传闻 · 3/4财报倒计时</h4>
+        <p>AVGO $322（MCP校准后浮亏收窄至-2.1%）。Meta-AMD合作传闻仍悬而未决。3/4 AVGO财报是W3关键验证点——关注AI收入占比是否>15%+客户集中度+定制ASIC前景。<br><strong style="color:#f1f5f9">应对：</strong>W3风险未完全解除。继续监控Meta-AMD合作是否正式确认。</p>
+      </div>
+    </div>
+  </div>
+  <!-- END:risk-board -->
+  <!-- BEGIN:panel-title -->
+<div class="panel-title" id="sec-panel">📊 资产监控 Dashboard（数据基准：美股2/26收盘 · A-type价格修正更新）</div>
+  <!-- END:panel-title -->
+
+  <!-- BEGIN:dash-row1 -->
+  <!-- 第一行：总览指标 -->
+  <div class="current-panel">
+    <div class="asset-card">
+      <div class="label">总资产（RMB）</div>
+      <div class="value v-pk">~83.8万</div>
+      <div class="tag tag-n">年末目标 157-167万</div>
+    </div>
+    <div class="asset-card">
+      <div class="label">美股券商账户</div>
+      <div class="value v-r">$15,449</div>
+      <div style="font-size:10px;color:#8892b0;margin-top:4px;" data-check="portfolio-value">持仓$8,328 + 现金$7,121</div>
+      <div class="tag tag-s" data-check="portfolio-gain">①②批+GLD已建 · 持仓+0.29% · +$24</div>
+    </div>
+    <div class="asset-card">
+      <div class="label">A股量化私募</div>
+      <div class="value v-o">53.19万</div>
+      <div class="tag tag-a">+6.38% · 退出信号 0/6</div>
+    </div>
+    <div class="asset-card">
+      <div class="label">待投子弹（USD）</div>
+      <div class="value v-b">$7,121</div>
+      <div class="tag tag-d">③批 · 4月中旬兜底/回调加速</div>
+    </div>
+    <div class="asset-card">
+      <div class="label">家庭安全垫</div>
+      <div class="value v-b">20万</div>
+      <div class="tag tag-d">银行卡 · 绝对防御 ✅</div>
+    </div>
+    <div class="asset-card">
+      <div class="label">腾讯待解禁</div>
+      <div class="value v-r">~78万</div>
+      <div class="tag tag-t">2026-2028分批到账</div>
+    </div>
+  </div>
+  <!-- END:dash-row1 -->
+
+  <!-- BEGIN:dash-row2 -->
+  <!-- 第二行：美股持仓（AI自动更新盈亏） -->
+  <div class="current-panel" style="margin-top:-32px;">
+    <div class="asset-card" style="border-left:3px solid #60a5fa">
+      <div class="label">NVDA 英伟达 · 核心①</div>
+      <div class="value" style="color:#60a5fa;font-size:20px">11.93股</div>
+      <div style="font-size:11px;color:#8892b0;margin-top:4px;">
+        均价 $185.31 · 成本$2,211<br>
+        <span style="color:#546380">①批7股@$187.35 + ②批4.93股@$182.45</span>
+      </div>
+      <div class="tag tag-d">核心①</div>
+    </div>
+    <div class="asset-card" style="border-left:3px solid #60a5fa">
+      <div class="label">AVGO 博通 · 核心②</div>
+      <div class="value" style="color:#60a5fa;font-size:20px">5.36股</div>
+      <div style="font-size:11px;color:#8892b0;margin-top:4px;">
+        均价 $328.40 · 成本$1,762<br>
+        <span style="color:#546380">①批3股@$330.6 + ②批2.36股@$325.59</span>
+      </div>
+      <div class="tag tag-d">核心②</div>
+    </div>
+    <div class="asset-card" style="border-left:3px solid #34d399">
+      <div class="label">VT 全球股票ETF · 底仓·全球分散</div>
+      <div class="value" style="color:#34d399;font-size:20px">20.98股</div>
+      <div style="font-size:11px;color:#8892b0;margin-top:4px;">
+        均价 $146.01 · 成本$3,064<br>
+        <span style="color:#546380">①批14股@$146.01 + ②批6.98股@$146.03</span>
+      </div>
+      <div class="tag tag-d">底仓·全球分散</div>
+    </div>
+    <div class="asset-card" style="border-left:3px solid #a78bfa">
+      <div class="label">QQQ 纳指100 ETF · 科技弹性补充</div>
+      <div class="value" style="color:#a78bfa;font-size:20px">1.7股</div>
+      <div style="font-size:11px;color:#8892b0;margin-top:4px;">
+        均价 $601.37 · 成本$1,022<br>
+        <span style="color:#546380">②批1.7股@$601.37</span>
+      </div>
+      <div class="tag tag-d">科技弹性补充</div>
+    </div>
+    <div class="asset-card" style="border-left:3px solid #facc15">
+      <div class="label">GLD 黄金ETF · 对冲保险</div>
+      <div class="value" style="color:#facc15;font-size:20px">0.5212股</div>
+      <div style="font-size:11px;color:#8892b0;margin-top:4px;">
+        均价 $469.99 · 成本$245<br>
+        <span style="color:#546380">02-24买入0.5212股@$469.99</span>
+      </div>
+      <div class="tag tag-d">对冲保险</div>
+    </div>
+  </div>
+  <!-- END:dash-row2 -->
+
+  <!-- BEGIN:dash-row3 -->
+  <!-- 第三行：私募 + 固定资产（私募需用户手动更新） -->
+  <div class="current-panel" style="margin-top:-32px;">
+    <div class="asset-card" style="border-left:3px solid #fb923c">
+      <div class="label">黑翼CTA-S1（10万本金）</div>
+      <div class="value" style="color:#34d399;font-size:18px">10.48万</div>
+      <div style="font-size:11px;color:#8892b0;margin-top:4px;">
+        收益 <span style="color:#34d399">+4.80%</span> ｜ 最大回撤 0.00%
+      </div>
+      <div class="tag tag-a">CTA策略 · 长期持有 · 兼具尾部对冲功能</div>
+    </div>
+    <div class="asset-card" style="border-left:3px solid #fb923c">
+      <div class="label">黑翼A500指增（40万本金）</div>
+      <div class="value" style="color:#34d399;font-size:18px">42.71万</div>
+      <div style="font-size:11px;color:#8892b0;margin-top:4px;">
+        收益 <span style="color:#34d399">+6.78%</span> ｜ 最大回撤 <span style="color:#fb923c">-0.68%</span>
+      </div>
+      <div class="tag tag-a">指数增强 · 主力仓</div>
+    </div>
+    <div class="asset-card" style="border-left:3px solid #a78bfa">
+      <div class="label">年现金流入 · 燃料</div>
+      <div class="value" style="color:#a78bfa;font-size:18px">~50万</div>
+      <div style="font-size:11px;color:#8892b0;margin-top:4px;">
+        月结余1.5-2.5万 → 持续注入美股
+      </div>
+      <div class="tag tag-f">最大资产 · 人力资本</div>
+    </div>
+  </div>
+  <!-- END:dash-row3 -->
+
+  <div style="text-align:center;font-size:11px;color:#546380;margin:-20px 0 48px;padding:0 20px;">
+    📋 <strong style="color:#7b8db0">更新规则：</strong>美股盈亏 = AI每次更新自动计算（基于价格面板最新价） ｜ 私募数据 = 你每周提供收益截图
+  </div>
+
+  <!-- ========== 标的物最新价格及操作建议 ========== -->
+  <!-- BEGIN:price-table -->
+  <div class="price-section" id="sec-price">
+    <h3>💰 当前持仓 + 待操作标的（v5.23 · 数据基准：美股2/26收盘）</h3>
+    <div class="table-wrap">
+    <table class="price-table">
+      <thead><tr><th>代码</th><th>名称</th><th>市场</th><th>最新价</th><th>较上版<br><span style="font-weight:400;font-size:9px;color:#546380">价格未变=→</span></th><th>位置</th><th>操作</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr class="price-cat"><td colspan="8">🔥 AI / 半导体核心仓（进攻主力）</td></tr>
+        <tr><td><strong style="color:#60a5fa">NVDA</strong></td><td>英伟达</td><td>纳斯达克</td><td><strong style="color:#f87171">~$184.89</strong></td><td><span class="chg-dn">↓$187→$185（-0.87%）</span></td><td style="color:#facc15">中高74%</td><td><span class="op-tag op-hold">①②批已持有</span></td><td style="text-align:left;font-size:11px">2/26收$184.89（MCP校准·较上版-0.9%）。11.93股·均价$185.31·成本$2,211 → 市值$2,206·浮亏-$5(-0.23%)。W12已核查✅（Q4：营收$681亿YoY+73%/毛利率75.0%/数据中心91.5%·三条均安全）·下次财报5/20</td></tr>
+        <tr><td><strong style="color:#60a5fa">TSM</strong></td><td>台积电ADR</td><td>NYSE</td><td><strong style="color:#34d399">~$376.81</strong></td><td><span class="chg-up">↑$374→$377（+0.82%）</span></td><td style="color:#f87171">极高95%</td><td><span class="op-tag op-hold">勿追高</span></td><td style="text-align:left;font-size:11px">2/26收$376.81（MCP校准+0.8%）。仍处极高位。52周高$390·当前回撤~3.4%（需≥10%才建仓·v7.4方案B）</td></tr>
+        <tr><td><strong style="color:#60a5fa">MU</strong></td><td>美光科技</td><td>纳斯达克</td><td><strong style="color:#34d399">~$415.56</strong></td><td><span class="chg-up">↑$408→$416（+1.93%）</span></td><td style="color:#f87171">极高90%</td><td><span class="op-tag op-hold">勿追高</span></td><td style="text-align:left;font-size:11px">2/26收$415.56（MCP校准+1.9%）。PE 40。52周高$456·当前回撤~8.8%（需≥15%才建仓·v7.4方案B）。3/18财报</td></tr>
+        <tr style="background:rgba(255,255,255,0.015)"><td><strong style="color:#60a5fa">AVGO</strong></td><td>博通 <span style="color:#34d399;font-size:10px">升级为核心②</span></td><td>纳斯达克</td><td><strong style="color:#34d399">~$321.7</strong></td><td><span class="chg-up">↑$310→$322（+3.70%）</span></td><td style="color:#facc15">中位66%</td><td><span class="op-tag op-hold">①②批已持有</span></td><td style="text-align:left;font-size:11px">2/26收$321.70（MCP校准·较上版+3.7%·上版$310.21偏差较大）。5.36股·均价$328.40·成本$1,762 → 市值$1,724·浮亏-$38(-2.14%)。3/4财报倒计时4个交易日</td></tr>
+        <tr style="background:rgba(255,255,255,0.015)"><td><strong style="color:#94a3b8">AMD</strong></td><td>超微半导体 <span style="color:#546380;font-size:10px">备选</span></td><td>纳斯达克</td><td><strong style="color:#34d399">~$203.68</strong></td><td><span class="chg-up">↑$203→$204（+0.46%）</span></td><td style="color:#facc15">中位57%</td><td><span class="op-tag op-watch">观望</span></td><td style="text-align:left;font-size:11px">2/26收$203.68（MCP校准+0.5%）。MI300X追赶NVDA但份额仍<10%</td></tr>
+        <tr class="price-cat"><td colspan="8">📊 宽基指数ETF（底仓配置）</td></tr>
+        <tr><td><strong style="color:#60a5fa">QQQ</strong></td><td>纳指100 ETF</td><td>纳斯达克</td><td><strong style="color:#34d399">~$609.24</strong></td><td><span class="chg-up">↑$607→$609（+0.35%）</span></td><td style="color:#f87171">高位88%</td><td><span class="op-tag op-hold">②批已持有</span></td><td style="text-align:left;font-size:11px">2/26收$609.24（MCP校准+0.4%）。1.7股@$601.37·成本$1,022 → 市值$1,036·浮盈+$14(+1.34%)。科技弹性补充</td></tr>
+        <tr><td><strong style="color:#60a5fa">VT</strong></td><td>全球股票ETF</td><td>NYSE</td><td><strong style="color:#34d399">~$148.4</strong></td><td><span class="chg-up">↑$148→$148（+0.24%）</span></td><td style="color:#f87171">高位91%</td><td><span class="op-tag op-hold">①②批已持有</span></td><td style="text-align:left;font-size:11px">2/26收$148.40（MCP校准+0.2%·接近52周高$149）。20.98股·均价$146.01·成本$3,064 → 市值$3,113·浮盈+$49(+1.61%)。全球分散底仓</td></tr>
+        <tr><td><strong style="color:#60a5fa">SPY</strong></td><td>标普500 ETF</td><td>NYSE</td><td><strong style="color:#34d399">~$689.3</strong></td><td><span class="chg-up">↑$688→$689（+0.24%）</span></td><td style="color:#f87171">高位92%</td><td><span class="op-tag op-watch">观望</span></td><td style="text-align:left;font-size:11px">2/26收$689.30（MCP校准）。VIX 18.63（较上版19.62降5%）</td></tr>
+        <tr class="price-cat"><td colspan="8">🥇 黄金（对冲保险层）</td></tr>
+        <tr><td><strong style="color:#60a5fa">GLD</strong></td><td>黄金ETF</td><td>NYSE</td><td><strong style="color:#34d399">~$477.48</strong></td><td><span class="chg-up">↑$476→$477（+0.34%）</span></td><td style="color:#f87171">高位88%</td><td><span class="op-tag op-hold">已建仓·3%达标</span></td><td style="text-align:left;font-size:11px">2/26收$477.48（MCP校准+0.3%·续涨）。金期货$5,206/oz。0.5212股·均价$469.99·成本$245 → 市值$249·浮盈+$4(+1.58%)。占比3.0%——维持3%目标</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div style="margin-top:12px;font-size:12px;color:#7b8db0;line-height:1.8;">
+      <strong style="color:#60a5fa">当前持仓：</strong>NVDA 11.93股·$2,206(-0.24%) + AVGO 5.36股·$1,724(-2.14%) + VT 20.98股·$3,113(+1.61%) + QQQ 1.7股·$1,036(+1.34%) + GLD 0.5212股·$249(+1.58%) = <span data-check="portfolio-value;portfolio-cost;portfolio-gain">总市值$8,328 / 成本$8,304 / <strong style="color:#34d399">浮盈+$24(+0.29%) · MDD 2.4%</strong></span>。AI/半导体直接占比47%（≤55%✅）· 穿透后科技暴露~60%（≤65%✅）· GLD对冲占比3%（=3%底线·首次达标！✅）<br>
+      <strong style="color:#facc15">待操作：</strong>③批4月中旬兜底（配比已重评估·VT为核心） · TSM $377·52周高~$390·回撤~3.4%（需≥10%·方案B） · MU $416·52周高~$456·回撤~8.8%（需≥15%·方案B） · 3/4 AVGO财报（倒计时4个交易日·W3验证） · W12 NVDA Q4已核查✅（营收+73%/毛利率75%/DC 91.5%·三条安全·下次5/20）
+    </div>
+
+    <!-- 观察池 + 未来配置（折叠） -->
+    <details class="fold-section" style="margin-top:16px;">
+      <summary>展开观察池 · 未来配置 · 监控标的（27+行·GLD已提升至主持仓）</summary>
+      <div class="table-wrap" style="margin-top:10px;">
+      <table class="price-table">
+        <thead><tr><th>代码</th><th>名称</th><th>市场</th><th>最新价</th><th>较上版</th><th>位置</th><th>操作</th><th>理由</th></tr></thead>
+        <tbody>
+        <tr class="price-cat"><td colspan="8">🥇 黄金观察池</td></tr>
+        <tr style="background:rgba(255,255,255,0.015)"><td><strong style="color:#94a3b8">SCHD</strong></td><td>美股红利ETF <span style="color:#546380;font-size:10px">备选</span></td><td>NYSE</td><td><strong style="color:#f87171">~$31.51</strong></td><td><span class="chg-dn">↓$32→$32（-0.19%）</span></td><td style="color:#facc15">中位60%</td><td><span class="op-tag op-wait">2031配置</span></td><td style="text-align:left;font-size:11px">2/26收$31.51（持平）。股息率~3.5%，攻守转换期优选</td></tr>
+        <tr><td><strong style="color:#60a5fa">2840.HK</strong></td><td>港股金ETF</td><td>港交所</td><td><strong style="color:#34d399">~HK$3,730</strong></td><td><span class="chg-up">↑HK$3720→HK$3730（+0.27%）</span></td><td style="color:#facc15">中高86%</td><td><span class="op-tag op-hold">未持仓·备选</span></td><td style="text-align:left;font-size:11px">港股2/27盘中HK$3,730（+0.27%微涨）。未持仓·港币黄金备选。GLD为美元首选</td></tr>
+        <tr style="background:rgba(255,255,255,0.015)"><td><strong style="color:#94a3b8">IAU</strong></td><td>iShares黄金 <span style="color:#546380;font-size:10px">备选</span></td><td>NYSE</td><td><strong style="color:#34d399">~$97.79</strong></td><td><span class="chg-up">↑$97→$98（+0.85%）</span></td><td style="color:#f87171">高位88%</td><td><span class="op-tag op-hold">费率更低</span></td><td style="text-align:left;font-size:11px">2/26收$97.79（+0.85%·与GLD同步 ✅方向一致）。费率0.25%（低于GLD 0.40%）</td></tr>
+        <tr style="background:rgba(255,255,255,0.015)"><td><strong style="color:#94a3b8">GDX</strong></td><td>金矿股ETF <span style="color:#546380;font-size:10px">备选</span></td><td>NYSE</td><td><strong style="color:#34d399">~$113.89</strong></td><td><span class="chg-up">↑$111→$114（+2.46%）</span></td><td style="color:#f87171">极高100%</td><td><span class="op-tag op-hold">高波动/勿追</span></td><td style="text-align:left;font-size:11px">2/26收$113.89（+2.46%大涨·金矿股暴涨）。逼近52周高$114！</td></tr>
+        <tr class="price-cat"><td colspan="8">🇨🇳 中概 / 港股（卫星仓位）</td></tr>
+        <tr><td><strong style="color:#60a5fa">0700.HK</strong></td><td>腾讯控股</td><td>港交所</td><td><strong style="color:#34d399">~HK$527.5</strong></td><td><span class="chg-up">↑HK$512→HK$528（+3.03%）</span></td><td style="color:#facc15">中位41%</td><td><span class="op-tag op-sell">解禁后卖</span></td><td style="text-align:left;font-size:11px">港股2/27盘中HK$527.50（+3.0%反弹）。不影响解禁卖出策略</td></tr>
+        <tr><td><strong style="color:#60a5fa">9988.HK</strong></td><td>阿里巴巴</td><td>港交所</td><td><strong style="color:#34d399">~HK$144.4</strong></td><td><span class="chg-up">↑HK$143→HK$144（+0.98%）</span></td><td style="color:#facc15">中位54%</td><td><span class="op-tag op-watch">观望</span></td><td style="text-align:left;font-size:11px">港股2/27盘中HK$144.40（+0.98%反弹·昨日暴跌后回稳）</td></tr>
+        <tr><td><strong style="color:#60a5fa">KWEB</strong></td><td>中概互联ETF</td><td>NYSE</td><td><strong style="color:#34d399">~$31.46</strong></td><td><span class="chg-up">↑$31→$31（+0.10%）</span></td><td style="color:#facc15">中位69%</td><td><span class="op-tag op-watch">观望</span></td><td style="text-align:left;font-size:11px">2/26收$31.46（持平）。中概ETF</td></tr>
+        <tr style="background:rgba(255,255,255,0.015)"><td><strong style="color:#94a3b8">PDD</strong></td><td>拼多多ADR <span style="color:#546380;font-size:10px">备选</span></td><td>纳斯达克</td><td><strong style="color:#f87171">~$105.39</strong></td><td><span class="chg-dn">↓$107→$105（-1.41%）</span></td><td style="color:#facc15">中位42%</td><td><span class="op-tag op-watch">观望</span></td><td style="text-align:left;font-size:11px">2/26收$105.39（-1.41%微跌）。Temu关税风险仍存</td></tr>
+        <tr style="background:rgba(255,255,255,0.015)"><td><strong style="color:#94a3b8">03690.HK</strong></td><td>美团 <span style="color:#546380;font-size:10px">备选</span></td><td>港交所</td><td><strong style="color:#f87171">~HK$82.05</strong></td><td><span class="chg-dn">↓HK$83→HK$82（-0.79%）</span></td><td style="color:#34d399">低位1%</td><td><span class="op-tag op-watch">观望</span></td><td style="text-align:left;font-size:11px">港股2/27盘中HK$82.05（-0.79%·52周新低附近$80.10）</td></tr>
+        <tr class="price-cat"><td colspan="8">🧠 AI应用层（2028-2030年逐步配置）</td></tr>
+        <tr><td><strong style="color:#60a5fa">MSFT</strong></td><td>微软</td><td>纳斯达克</td><td><strong style="color:#34d399">~$401.72</strong></td><td><span class="chg-up">↑$402→$402（+0.05%）</span></td><td style="color:#facc15">中位27%</td><td><span class="op-tag op-wait">未来配置</span></td><td style="text-align:left;font-size:11px">2/26收$401.72（持平）。52周高$555·当前-28%深跌区。等2029再配</td></tr>
+        <tr><td><strong style="color:#60a5fa">PLTR</strong></td><td>Palantir</td><td>纳斯达克</td><td><strong style="color:#34d399">~$135.94</strong></td><td><span class="chg-up">↑$135→$136（+0.84%）</span></td><td style="color:#facc15">中位49%</td><td><span class="op-tag op-wait">暂不介入</span></td><td style="text-align:left;font-size:11px">2/26收$135.94（+0.84%微涨）。PE 216x极度高估。52周高$208·当前-34%</td></tr>
+        <tr><td><strong style="color:#60a5fa">CRM</strong></td><td>Salesforce</td><td>NYSE</td><td><strong style="color:#34d399">~$199.47</strong></td><td><span class="chg-up">↑$198→$199（+0.73%）</span></td><td style="color:#34d399">低位19%</td><td><span class="op-tag op-wait">未来配置</span></td><td style="text-align:left;font-size:11px">2/26收$199.47（+0.73%·Q4财报后续涨）。52周高$303↓34%深度超卖。2029年可能是极佳抄底窗口</td></tr>
+        <tr><td><strong style="color:#60a5fa">TSLA</strong></td><td>特斯拉</td><td>纳斯达克</td><td><strong style="color:#f87171">~$408.58</strong></td><td><span class="chg-dn">↓$409→$409（-0.09%）</span></td><td style="color:#f87171">高位68%</td><td><span class="op-tag op-wait">2030配置</span></td><td style="text-align:left;font-size:11px">2/26收$408.58（持平）。等2030</td></tr>
+        <tr style="background:rgba(255,255,255,0.015)"><td><strong style="color:#94a3b8">GOOG</strong></td><td>Alphabet <span style="color:#546380;font-size:10px">备选</span></td><td>纳斯达克</td><td><strong style="color:#34d399">~$307.15</strong></td><td><span class="chg-up">↑$304→$307（+0.89%）</span></td><td style="color:#facc15">中高79%</td><td><span class="op-tag op-wait">2029配置</span></td><td style="text-align:left;font-size:11px">2/26收$307.15（MCP校准+0.9%）。Gemini AI生态。2029再配</td></tr>
+        <tr style="background:rgba(255,255,255,0.015)"><td><strong style="color:#94a3b8">META</strong></td><td>Meta <span style="color:#546380;font-size:10px">备选</span></td><td>纳斯达克</td><td><strong style="color:#34d399">~$657.01</strong></td><td><span class="chg-up">↑$652→$657（+0.81%）</span></td><td style="color:#f87171">高位56%</td><td><span class="op-tag op-wait">2029配置</span></td><td style="text-align:left;font-size:11px">2/26收$657.01（+0.81%微涨）。⚠️Meta-AMD合作传闻——可能影响AVGO定制ASIC订单</td></tr>
+        <tr class="price-cat"><td colspan="8">🛡️ 债券 / 红利（2031-2035年攻守转换配置）</td></tr>
+        <tr><td><strong style="color:#60a5fa">TLT</strong></td><td>20年国债ETF</td><td>纳斯达克</td><td><strong style="color:#34d399">~$90.27</strong></td><td><span class="chg-up">↑$90→$90（+0.18%）</span></td><td style="color:#facc15">中位64%</td><td><span class="op-tag op-wait">未来配置</span></td><td style="text-align:left;font-size:11px">2/26收$90.27（+0.18%微涨·避险）。股息率4.4%。利率3.5%-3.75%，2031年配置</td></tr>
+        <tr><td><strong style="color:#60a5fa">BND</strong></td><td>美债总市场</td><td>纳斯达克</td><td><strong style="color:#34d399">~$75.02</strong></td><td><span class="chg-up">↑$75→$75（+0.08%）</span></td><td style="color:#f87171">高位85%</td><td><span class="op-tag op-wait">未来配置</span></td><td style="text-align:left;font-size:11px">2/26收$75.02（+0.08%·接近52周高$75.15）。股息率3.85%</td></tr>
+        <tr><td><strong style="color:#60a5fa">00941.HK</strong></td><td>中国移动</td><td>港交所</td><td><strong style="color:#f87171">~HK$78.95</strong></td><td><span class="chg-dn">↓HK$79→HK$79（-0.50%）</span></td><td style="color:#facc15">中位21%</td><td><span class="op-tag op-wait">未来红利仓</span></td><td style="text-align:left;font-size:11px">港股2/27盘中HK$78.95（-0.50%微跌）。股息率~6.67%，2031年后红利接盘标</td></tr>
+        <tr><td><strong style="color:#60a5fa">600900.SS</strong></td><td>长江电力</td><td>上交所</td><td><strong style="color:#34d399">~¥26.08</strong></td><td><span class="chg-up">↑¥26→¥26（+0.15%）</span></td><td style="color:#34d399">低位12%</td><td><span class="op-tag op-wait">未来红利仓</span></td><td style="text-align:left;font-size:11px">A股2/27盘中¥26.08（+0.15%持平）。股息率~3.56%</td></tr>
+        <tr><td><strong style="color:#60a5fa">601088.SS</strong></td><td>中国神华</td><td>上交所</td><td><strong style="color:#34d399">~¥41.95</strong></td><td><span class="chg-up">↑¥42→¥42（+0.29%）</span></td><td style="color:#facc15">中高74%</td><td><span class="op-tag op-wait">未来红利仓</span></td><td style="text-align:left;font-size:11px">A股2/27盘中¥41.95（+0.29%微涨）。煤炭龙头+高分红</td></tr>
+        <tr style="background:rgba(255,255,255,0.015)"><td><strong style="color:#94a3b8">00823.HK</strong></td><td>领展REIT <span style="color:#546380;font-size:10px">备选</span></td><td>港交所</td><td><strong style="color:#f87171">~HK$38.48</strong></td><td><span class="chg-dn">↓HK$39→HK$38（-0.05%）</span></td><td style="color:#34d399">低位47%</td><td><span class="op-tag op-wait">2031红利仓</span></td><td style="text-align:left;font-size:11px">港股2/27盘中HK$38.48（持平）。股息率~7.17%。2031攻守转换时配置</td></tr>
+        <tr style="background:rgba(255,255,255,0.015)"><td><strong style="color:#94a3b8">SHY</strong></td><td>1-3年短债ETF <span style="color:#546380;font-size:10px">备选</span></td><td>纳斯达克</td><td><strong style="color:#34d399">~$83.07</strong></td><td><span class="chg-up">↑$83→$83（+0.04%）</span></td><td style="color:#facc15">中位92%</td><td><span class="op-tag op-wait">现金管理</span></td><td style="text-align:left;font-size:11px">2/26收$83.07（+0.04%持平）。股息率3.78%。极低波动短债</td></tr>
+        <tr class="price-cat"><td colspan="8">⚡ L1电力层 / 数据中心基础设施（灰色监控）</td></tr>
+        <tr style="opacity:0.5"><td><strong style="color:#546380">VST</strong></td><td>Vistra Energy <span style="color:#546380;font-size:10px">监控</span></td><td>NYSE</td><td><strong style="color:#34d399">~$176.82</strong></td><td><span style="color:#546380">↑$169→$177（+4.67%）</span></td><td style="color:#facc15">中高67%</td><td><span class="op-tag" style="background:rgba(84,99,128,0.15);color:#546380">仅监控</span></td><td style="text-align:left;font-size:11px;color:#546380">2/26收$176.82（+4.67%大涨反弹·VST发财报?）。AI数据中心电力需求受益者</td></tr>
+        <tr style="opacity:0.5"><td><strong style="color:#546380">CEG</strong></td><td>Constellation Energy <span style="color:#546380;font-size:10px">监控</span></td><td>纳斯达克</td><td><strong style="color:#34d399">~$323.56</strong></td><td><span style="color:#546380">↑$315→$324（+2.57%）</span></td><td style="color:#facc15">中位65%</td><td><span class="op-tag" style="background:rgba(84,99,128,0.15);color:#546380">仅监控</span></td><td style="text-align:left;font-size:11px;color:#546380">2/26收$323.56（+2.57%反弹）。核电龙头。与MSFT签20年核电PPA供数据中心</td></tr>
+        <tr style="opacity:0.5"><td><strong style="color:#546380">NEE</strong></td><td>NextEra Energy <span style="color:#546380;font-size:10px">监控</span></td><td>NYSE</td><td><strong style="color:#f87171">~$91.99</strong></td><td><span style="color:#546380">↓$94→$92（-2.15%）</span></td><td style="color:#f87171">极高88%</td><td><span class="op-tag" style="background:rgba(84,99,128,0.15);color:#546380">仅监控</span></td><td style="text-align:left;font-size:11px;color:#546380">2/26收$91.99（-2.15%回调·从极高位回落）。全球最大风能/太阳能公司</td></tr>
+        <tr style="opacity:0.5"><td><strong style="color:#546380">EQIX</strong></td><td>Equinix <span style="color:#546380;font-size:10px">监控</span></td><td>纳斯达克</td><td><strong style="color:#f87171">~$948.02</strong></td><td><span style="color:#546380">↓$950→$948（-0.22%）</span></td><td style="color:#f87171">高位85%</td><td><span class="op-tag" style="background:rgba(84,99,128,0.15);color:#546380">仅监控</span></td><td style="text-align:left;font-size:11px;color:#546380">2/26收$948.02（-0.22%持平）。全球最大数据中心REIT</td></tr>
+        <tr class="price-cat"><td colspan="8">🔗 L3基建层·网络互连（灰色监控）</td></tr>
+        <tr style="opacity:0.5"><td><strong style="color:#546380">ANET</strong></td><td>Arista Networks <span style="color:#546380;font-size:10px">监控</span></td><td>NYSE</td><td><strong style="color:#34d399">~$130.25</strong></td><td><span style="color:#546380">↑$129→$130（+0.70%）</span></td><td style="color:#facc15">中高67%</td><td><span class="op-tag" style="background:rgba(84,99,128,0.15);color:#546380">仅监控</span></td><td style="text-align:left;font-size:11px;color:#546380">2/26收$130.25（+0.70%微涨）。L3基建层网络互连龙头</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </details>
+
+    <details class="fold-section" style="margin-top:12px;">
+      <summary>展开重大变化回顾（6条历史变更记录）</summary>
+      <div style="margin-top:10px;font-size:12px;color:#7b8db0;line-height:1.8;">
+      ① <span style="color:#34d399">AVGO博通从备选升级为正式核心仓</span>——回测教训表明单押NVDA风险极大，AVGO博通（AI定制ASIC）与NVDA英伟达（通用GPU）互补形成"双核心"策略；
+      ② <span style="color:#f87171">新增强制再平衡规则：单一标的>35%必须卖出超出部分</span>——避免NVDA占比过高暴跌拖累组合；
+      ③ <span style="color:#60a5fa">AI/半导体总占比从75%降至55%以下</span>——VT全球ETF权重提升至27%+QQQ纳指100 8%（科技弹性补充），降低单一赛道风险；
+      ④ <span style="color:#fb923c">新增汇率风险意识</span>——保持15-20%人民币资产配置（私募+红利股），不全部换汇成美元。
+      ⑤ <span style="color:#facc15">50万私募策略补全</span>——新增独立板块详述操作、退出机制和年度评估；
+      ⑥ 黄金对冲层3%最低配置底线：GLD<3%时每月必买·≥3%后正常DCA维持（v7.0方案B）。
+      </div>
+    </details>
+    <span style="display:block;margin-top:8px;font-size:11px;color:#546380">💡 灰色行为各类别备选标的，遵循同一投资框架逻辑，可根据当时市场环境择优替代或补充。</span>
+  </div>
+  <!-- END:price-table -->
+
+  <!-- ========== 仪表盘/手册 分割带 ========== -->
+  <div class="zone-divider">
+    <div class="zd-title">以下为参考手册</div>
+    <div class="zd-hint">信号系统 · 基准镜像 · 标的分析 · 腾讯解禁 · 换汇 · 私募 · 五幕框架 · 时间轴 · 测算 · 支出规划 · 人力资本 · 保险 · 回测</div>
+  </div>
+
+  <!-- ========== 手册层开始 ========== -->
+  <div class="ref-zone">
+
+  <!-- ========== 信号系统 ========== -->
+  <div class="signal-section" id="sec-signal">
+    <h3>📡 动态纠偏信号系统（替代精确择时）</h3>
+    <!-- BEGIN:signal-scope -->
+    <div style="margin-bottom:14px;padding:12px 18px;border-left:3px solid #fb923c;background:rgba(255,255,255,0.02);border-radius:0 8px 8px 0;font-size:12.5px;line-height:1.8;color:#8892b0;">
+      <strong style="color:#f1f5f9">⚙️ 信号作用域规则：</strong>
+      0-1条信号=正常建仓 ｜ 2条信号=存量第一轮减仓+<strong style="color:#fb923c">种子仓缩减至70%</strong> ｜ ≥3条=存量第二轮减仓+<strong style="color:#f87171">全部暂停新建仓</strong>。恢复：信号回落至≤1条时恢复上一档。当前1/7触发（CAPE>38），处于正常建仓区间。
+      <strong style="color:#f87171">但当减仓信号满足≥3个时，暂停所有新建仓直至信号回落至≤1个。</strong>
+      <br><strong style="color:#a78bfa">⚡ 多机制暂停叠加规则（Union Lock）：</strong>5个暂停机制（减仓≥3/MDD≥25%/AVGO黄灯/人力资本二级/地缘排除）可同时触发——<strong style="color:#f87171">所有生效机制取并集，全部恢复条件满足后才解除。</strong>单一机制恢复不解除暂停。
+    </div>
+    <!-- END:signal-scope -->
+    <div class="sig-grid">
+      <div class="sig-card">
+        <!-- BEGIN:sell-signal-header -->
+        <h4>🔴 减仓信号（满足2个触发第一轮，3个触发第二轮）— <span style="color:#facc15">当前1/7已触发</span></h4>
+        <!-- END:sell-signal-header -->
+        <p>
+          › <span class="trigger">标普500席勒PE（CAPE）> 38</span> <!-- BEGIN:sell-signal-1-note -->
+<span style="color:#facc15;font-size:11px;">✅ 已触发！2/27·CAPE 40.19(较上版40.42微降)·持续>38·减仓信号维持</span>
+ <!-- END:sell-signal-1-note -->（历史上仅2000年泡沫期和2024-2026年超过此值）<br>
+          › <span class="trigger">纳指月线RSI > 80 持续2个月</span><br>
+          › <span class="trigger">美联储联邦基金利率 > 5.5%</span><br>
+          › <span class="trigger">美国10Y-2Y国债利差由倒挂转正后12个月内</span>（衰退信号）<br>
+          › <span class="trigger">美股持仓近12个月收益率 > 80%（泡沫加速）</span><br>
+          › <span class="trigger">Uber司机 / 理发师开始跟你聊AI股票</span>（鞋童理论）<br>
+          › <span class="trigger">美国CPI持续 > 5% 超过6个月</span>
+        </p>
+        <details class="fold-section">
+          <summary>CPI速度预警 + 减仓信号失效条件</summary>
+          <div style="margin-top:8px;padding:10px 14px;background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.1);border-radius:8px;">
+            <div style="font-size:11px;font-weight:700;color:#fb923c;margin-bottom:4px;">📊 CPI速度预警（不计入7条·前哨机制）</div>
+            <div style="font-size:10.5px;color:#8892b0;line-height:1.7;">
+              CPI单月环比跳升>0.5个百分点 → <strong style="color:#facc15">滞胀预警</strong>（不触发减仓，但提升警戒等级）：①GLD定投不受金价阈值限制 ②GLD占比临时提升至月定投总额20% ③每周检查CPI。预警解除：CPI连续2个月环比下降。
+            </div>
+          </div>
+          <div style="margin-top:8px;padding:10px 14px;background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.1);border-radius:8px;">
+            <div style="font-size:11px;font-weight:700;color:#60a5fa;margin-bottom:4px;">📋 减仓信号失效条件（v5.8·各信号回落阈值）</div>
+            <div style="font-size:10.5px;color:#8892b0;line-height:1.7;">
+              #1 CAPE<38连续2次更新 ｜ #2 RSI降至<70 ｜ #3 利率<5.25% ｜ #4 转正后满12月或重新倒挂 ｜ #5 12月收益<60% ｜ #6 大众情绪转冷漠 ｜ #7 CPI<4.5%持续2月。<strong style="color:#f1f5f9">通用原则：失效阈值均低于触发阈值（缓冲区），避免边界反复。</strong>
+            </div>
+          </div>
+        </details>
+      </div>
+      <div class="sig-card">
+        <!-- BEGIN:buy-signal-header -->
+        <h4>🟢 加仓/抄底信号（满足2个即触发）— <span style="color:#34d399">当前1/6已触发</span></h4>
+        <!-- END:buy-signal-header -->
+        <p>
+          › <span class="trigger">纳指从高点回撤 > 25%</span><br>
+          › <span class="trigger">VIX恐慌指数 > 35 持续一周</span><br>
+          › <span class="trigger">美联储开启降息周期</span> <!-- BEGIN:buy-signal-3-note -->
+<span style="color:#34d399;font-size:11px;">✅ 已触发！当前3.50-3.75%，2024连续三次降息</span>
+ <!-- END:buy-signal-3-note --><br>
+          › <span class="trigger">媒体标题普遍出现"AI泡沫破裂""科技寒冬"</span><br>
+          › <span class="trigger">巴菲特开始大举买入科技股</span>（如有公开报道）<br>
+          › <span class="trigger">你有闲置现金但内心"非常不敢买"</span>（反向指标）
+        </p>
+        <details class="fold-section">
+          <summary>地缘结构性损伤排除条件</summary>
+          <div style="margin-top:8px;padding:10px 14px;background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.1);border-radius:8px;">
+            <div style="font-size:11px;font-weight:700;color:#f87171;margin-bottom:4px;">⛔ 地缘结构性损伤排除条件（v5.7·加仓信号可失效）</div>
+            <div style="font-size:10.5px;color:#8892b0;line-height:1.7;">
+              加仓信号触发时，若存在<strong style="color:#f87171">活跃地缘军事冲突直接影响核心供应链</strong>（如台海冲突导致TSM停产、中美全面脱钩导致NVDA中国营收归零），加仓信号<strong style="color:#f87171">暂时失效</strong>，所有新增投入暂停。<strong style="color:#34d399">VT/GLD等非供应链标的的定投不受影响。</strong>排除解除：冲突降级+核心供应链恢复运转。
+            </div>
+          </div>
+        </details>
+      </div>
+      <div class="sig-card">
+        <h4>⚖️ 强制再平衡规则 <span style="color:#f87171;font-size:11px">🆕 回测教训新增！</span></h4>
+        <p>
+          › <span class="trigger" style="color:#f87171">单一标的市值占比 > 35% → 超出部分必须卖出</span>（零例外！2021年NVDA英伟达>40%暴跌教训）<br>
+          › <span class="trigger">卖出资金分散到：GLD黄金ETF 30% + 其他核心标的 50% + 现金 20%</span><br>
+          › <span class="trigger">每季度末检查一次各标的占比</span><br>
+          › <span class="trigger" style="color:#f87171">技术革命拐点（如ChatGPT/AGI突破）→ 7天内允许现金仓20%紧急调入相关核心标的</span> <span style="font-size:10px;color:#7b8db0;">（弥补2023年加仓偏晚教训）</span><br>
+          › <span class="trigger">中概/港股总仓位上限10%</span>（康波框架无法预测中国监管风暴）
+        </p>
+      </div>
+      <div class="sig-card">
+        <h4>📉 组合级最大回撤（MDD）约束 <span style="color:#f87171;font-size:11px">🆕 P0新增！</span></h4>
+        <p>
+          › <span class="trigger" style="color:#facc15">组合总市值（美股部分）从历史高点回撤 ≥ 25% → 冻结所有新增投入</span>（定投/种子仓/事件驱动建仓全部暂停，已有持仓不动）<br>
+          › <span class="trigger" style="color:#f87171">组合总市值（美股部分）从历史高点回撤 ≥ 35% → 减仓至50%现金</span>（卖出持仓的50%转为现金，锁定剩余仓位不再卖出）<br>
+          › <span class="trigger">回撤恢复至 < 20% → 解除冻结，恢复正常操作节奏</span><br>
+          › <span class="trigger">计算基准：美股券商账户全部持仓市值（不含私募·不含安全垫）</span><br>
+          › <span class="trigger">历史高点按每次全量更新时记录的峰值市值，不追溯未记录的盘中高点</span><br>
+          › <span class="trigger" style="color:#f87171">速度约束：单周跌幅 > 15% → 立即减仓至50%现金</span>（不等月度检查·视同≥35%处理——动量+科技+大盘成长三重因子暴露在因子反转时可能导致极快下跌，幅度约束的"熔断机制"补充）<br>
+          <span style="font-size:10.5px;color:#546380">设计逻辑：MDD约束是信号系统的补充——信号系统监控宏观环境，MDD约束监控组合自身。当组合已在大幅亏损时，即使信号未满2条也应保护本金。与§7.1信号作用域规则独立运行，两者取更严格的一方执行。速度约束（单周>15%）是幅度约束的快速响应补充——避免月度检查周期内跳过25%直达35%。历史高点记录有局限：两次更新间可能遗漏更高盘中峰值。用户发现新高时可告知AI记录。</span>
+        </p>
+        <details class="fold-section">
+          <summary>康波播种例外（MDD≥25%时的有限参与窗口）</summary>
+          <div style="margin-top:8px;padding:10px 14px;background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.1);border-radius:8px;">
+            <div style="font-size:11px;font-weight:700;color:#34d399;margin-bottom:4px;">🌱 康波播种例外（v5.7·MDD≥25%时的有限参与窗口）</div>
+            <div style="font-size:10.5px;color:#8892b0;line-height:1.7;">
+              若MDD≥25%冻结生效，但同时满足 <strong style="color:#facc15">加仓信号≥3/6 + VIX>35持续一周 + 当前处于第一幕（2026-2030）</strong> → 允许动用<strong style="color:#f1f5f9">月结余的50%</strong>（非安全垫）投入<strong style="color:#34d399">仅VT</strong>（不投个股），作为"十年一遇建仓窗口"的有限参与。<br>
+              <strong style="color:#f87171">覆盖条件：</strong>§7.7人力资本二级响应生效时此例外不可用（暂停所有权益投入含VT）。
+            </div>
+          </div>
+        </details>
+      </div>
+      <div class="sig-card">
+        <h4>🟡 私募退出信号（满足1个即启动赎回）</h4>
+        <p>
+          › <span class="trigger">当年最大回撤 > 15%</span><br>
+          › <span class="trigger">连续6个月跑输沪深300指数</span><br>
+          › <span class="trigger">基金管理规模膨胀超过50亿</span><br>
+          › <span class="trigger">基金经理/核心量化研究员离职</span><br>
+          › <span class="trigger">同类量化私募集体大幅回撤（策略拥挤信号）</span><br>
+          › <span class="trigger">A股进入明显的熊市（沪深300跌幅 > 25%）</span>
+        </p>
+      </div>
+      <div class="sig-card">
+        <h4>🚨 紧急避险信号</h4>
+        <p>
+          › <span class="trigger">失业 → 立即停止所有新增投入，已有持仓不动</span><br>
+          › <span class="trigger">家庭现金储备 < 15万 → 从投资中撤回补充至20万（安全垫目标值）</span><br>
+          › <span class="trigger">重大疾病/意外 → 保险覆盖 + 暂停一切投资操作</span><br>
+          › <span class="trigger">台海/地缘冲突急剧升温 → 加大黄金至20% + 减少港股仓位</span><br>
+          › <span class="trigger">人民币快速升值超10% → 适度增加人民币资产占比</span><br>
+          › <span class="trigger">Trump关税全面升级（对华60%+/全球对等关税） → 增持黄金+减少出口敏感标的</span> <span style="color:#f87171;font-size:11px;">🔴 最高法院裁定IEEPA违法后Trump改用Section 122重设全球关税15%·市场消化中·1000+公司起诉退税·半导体Section 232大厂豁免不变·15%全球税率推升通胀预期→监控CPI</span><br>
+          › <span class="trigger">科技行业裁员潮（Layoffs.fyi月度>30,000人持续2月 / 腾讯内部裁员信号 / 地缘制裁连带信号） → 转移5-10%权益至防御资产（GLD/BNDW）+ 确认安全垫≥20万</span> <span style="color:#facc15;font-size:11px;">⚠️ 人力资本与金融资产高度正相关·事前预警而非事后应急（Merton跨期CAPM）· 地缘制裁连带：核心供应链受国家级制裁+影响腾讯业务→视同二级响应</span><br>
+          › <span class="trigger">港股长期停市（>5个交易日）/ 腾讯被列入制裁名单 → 腾讯解禁资金视为不可用，美股操作仅依赖月结余和券商现金</span> <span style="color:#facc15;font-size:11px;">⚠️ 港股停摆预案·已到账股份标记为"冻结资产"</span><br>
+          › <span class="trigger">TSM ADR停牌 → ≤30天持仓不动 / >30天按50%计入损失准备金 / >90天视为全额损失</span> <span style="color:#facc15;font-size:11px;">⚠️ 大额建仓TSM前须重评地缘风险等级</span><br>
+          › <span class="trigger">安全垫覆盖月数<6个月 → 评估是否上调安全垫目标值</span> <span style="color:#facc15;font-size:11px;">⚠️ 每年1月校验：安全垫目标值÷(年支出÷12)≥6个月</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 基准镜像组合 ========== -->
+  <div class="benchmark-section" id="sec-benchmark">
+    <h3>🪞 基准镜像组合（独立参照锚 · 不预测只分散 · 检验主动管理Alpha）</h3>
+    <p style="font-size:12px;color:#8892b0;line-height:1.8;margin-bottom:16px;">
+      <strong style="color:#34d399;">目的：</strong>维护一个虚拟的、极简的、不依赖任何预测的参照组合——<strong style="color:#f1f5f9;">80% VT全球股票ETF + 20% BNDW全球债券ETF</strong>，每年再平衡一次回到80/20。每次更新时对比实际组合与基准镜像的累计收益，回答一个核心问题：<strong style="color:#facc15;">「如果我什么都不预测，只做最基础的分散+再平衡，到今天我会是什么结果？」</strong><br>
+      <strong style="color:#34d399;">规则：</strong>基准镜像与实际组合同步投入相同金额（每月定投+每笔种子仓资金），唯一区别是买入标的——基准镜像永远只买80%VT+20%BNDW。不做择时、不看信号、不调赛道。
+    </p>
+
+    <!-- BEGIN:benchmark-grid -->
+<div class="benchmark-grid">
+      <div class="bench-card">
+        <h4>📊 实际组合（康波+赛道集中）</h4>
+        <div class="bench-value" data-check="portfolio-value">$8,328</div>
+        <div class="bench-label">种子仓①②批+GLD（2/7+2/17+2/24建仓）· NVDA+AVGO+QQQ+VT+GLD · 2/26收盘</div>
+        <p style="margin-top:8px;">
+          成本基准：<strong style="color:#f1f5f9;">$8,304</strong><br>
+          累计收益率：<strong style="color:#34d399;">+0.29%（+$24）· MDD 2.4%</strong><br>
+          持仓：NVDA 26% ｜ AVGO 21% ｜ VT 37% ｜ QQQ 12% ｜ GLD 3%
+        </p>
+      </div>
+      <div class="bench-card">
+        <h4>🪞 基准镜像（80%VT + 20%BNDW）</h4>
+        <div class="bench-value" style="color:#34d399;" data-check="benchmark-value">$8,414</div>
+        <div class="bench-label">累计投入$8,304（①批$4,347+②批$3,712+GLD同步$245）· 80%VT+20%BNDW · 2/26收盘</div>
+        <p style="margin-top:8px;">
+          成本基准：<strong style="color:#f1f5f9;">$8,304</strong><br>
+          累计收益率：<strong style="color:#34d399;">+1.32%（+$110）</strong><br>
+          持仓：VT 45.42股×$148.4=$6,740 ｜ BNDW 23.99股×$69.745=$1,673<br>
+          <span style="font-size:11px;color:#546380;">①批VT 23.75@$146.46 + ②批VT 20.34@$146.03 + GLD同步VT 1.33@$147.7 ｜ ①批BNDW 12.6@$68.98 + ②批BNDW 10.69@$69.46 + GLD同步BNDW 0.7@$69.68</span>
+        </p>
+      </div>
+    </div>
+    <!-- END:benchmark-grid -->
+
+    <div class="benchmark-grid" style="margin-top:12px;">
+      <div class="bench-card">
+        <h4>⚖️ 超额收益（Alpha）</h4>
+        <p>
+          <strong style="color:#f1f5f9;">Alpha = 实际组合收益率 - 基准镜像收益率</strong><br><br>
+          当前Alpha：<strong style="color:#f87171;" data-check="alpha">-1.03%（实际+0.29% vs 基准+1.32%）📉</strong><br><br>
+          <span style="color:#546380;">Alpha > 0：主动管理（康波框架+赛道选择+择时信号）正在创造价值</span><br>
+          <span style="color:#f87171;">Alpha ≤ 0：所有研究和操作不如买一只VT——需要认真反思</span><br>
+          <span style="color:#546380;font-size:11px;">⚠️ 建仓仅22天，科技暴跌日放大了集中仓位波动。Alpha从+1.18%→-1.46%→-1.03%，根因：科技集中仓位在暴跌日损失大于全球分散VT+债券BNDW，MCP校准后收窄。框架复审触发条件"连续12个月跑输"远未到达。</span>
+        </p>
+      </div>
+      <div class="bench-card">
+        <h4>🚨 框架复审触发条件</h4>
+        <p>
+          <strong style="color:#f87171;">连续12个月实际组合跑输基准镜像 → 触发框架复审</strong><br><br>
+          复审内容：<br>
+          · 康波周期假设是否仍然成立（拐点预测是否被证伪）<br>
+          · AI/半导体赛道集中是否在拖累整体收益<br>
+          · 是否应将部分或全部资金切换至基准配置（80%VT+20%BNDW）<br><br>
+          <span style="color:#546380;">注：建仓前12个月波动大属正常，此触发条件从种子仓全部建完后（预计2026年5月）开始计时</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="bench-alert bench-alert-gray">
+      <strong>📝 记录协议：</strong>每次全量更新时，同步更新两个组合的净值。基准镜像净值 = 按同期VT和BNDW实际市场价格计算的假设持仓市值。记录格式：日期 ｜ 实际组合净值 ｜ 基准镜像净值 ｜ Alpha ｜ 备注<br>
+      <strong>📅 历史记录：</strong><br>
+      · 2026-02-07：实际$4,347（建仓）｜ 基准$4,347（建仓）｜ Alpha = 0 ｜ 种子仓①批同步起算<br>
+      · 2026-02-14：实际$4,304（-1.0%）｜ 基准$4,351（+0.08%）｜ Alpha = <strong style="color:#f87171">-1.08%</strong> ｜ 建仓后首周·基准VT 23.75股@$146.46+BNDW 12.60股@$68.98<br>
+      · 2026-02-16：实际$4,304（-1.0%）｜ 基准$4,351（+0.08%）｜ Alpha = <strong style="color:#f87171">-1.08%</strong> ｜ 美股2/14-16三连休·价格同2/13·港股2/16除夕半天不影响美股持仓<br>
+      · 2026-02-17：实际$8,059（②批建仓·成本重置）｜ 基准$8,059（②批同步投入$3,712：VT 20.34股@$146.03+BNDW 10.69股@$69.46）｜ Alpha = <strong style="color:#94a3b8">0（重置）</strong> ｜ ②批种子仓建仓日·基准镜像同步追加<br>
+      · 2026-02-18：实际$8,144（+1.05%）｜ 基准$8,101（+0.52%）｜ Alpha = <strong style="color:#34d399">+0.53%</strong> ｜ ②批后首个收盘·MU+5.3%领涨·NVDA+1.6%反弹·QQQ+0.8%·VT+0.5%·AVGO+0.3%持平<br>
+      · 2026-02-20：实际$8,186（+1.58%）｜ 基准$8,143（+1.04%）｜ Alpha = <strong style="color:#34d399">+0.54%</strong> ｜ 美股周五全面反弹·GOOG+3.7%领涨·TSM+2.8%大涨·MU+2.6%·GLD+2.0%金价$5,130再创新高·NVDA+1.0%财报前动能·VIX 19.09(-5.6%大降)·组合新高<br>
+      · 2026-02-24：实际$8,406（+1.23%）｜ 基准$8,380（+0.92%）｜ Alpha = <strong style="color:#34d399">+0.31%</strong> ｜ GLD 0.5212股@$469.99买入（对冲层首次建仓·$245·基准同步追加VT 1.33@$147.70+BNDW 0.70@$69.68）。关税15%首日科技回调·QQQ-1.2%·但NVDA+0.9%逆势上涨（财报前买盘）·黄金暴涨GLD+2.7%金期货$5,194再创新高·VIX 21.01重回20上方·CAPE 39.78跌破40
+      · 2026-02-25：实际$8,422（+1.42%）｜ 基准$8,380（+0.92%）｜ Alpha = <strong style="color:#34d399">+0.50%</strong> ｜ 科技反弹·半导体剧烈分化：AMD+8.8%暴涨（Meta-AMD合作传闻）+TSM+4.3%大涨·但AVGO-1.5%承压（⚠️W3乙方风险关注·首次转负-0.94%）·NVDA+0.7%·VIX 19.55降回20下方·CAPE 40.08重回40上方·GLD $475(-1.4%回调)
+      · 2026-02-26：实际$8,274（-0.36%·MDD 3.0%）｜ 基准$8,396（+1.10%）｜ Alpha = <strong style="color:#f87171">-1.46%📉</strong> ｜ 科技暴跌日：NVDA-4.7%($187·财报利好被回吐)·AVGO-6.7%($310·3/4财报前暴跌·跌破成本线-5.63%)·MU-5.0%·TSM-3.6%·QQQ-1.5%·VIX升至19.62(+9.4%)。GLD+0.5%避险坚挺·GLD占比首次达到3.0%目标！USD/CNY 6.840续创52周新低。Alpha从+1.18%急转-1.46%（集中仓位暴跌日放大损失）
+    </div>
+  </div>
+
+  <!-- ========== 标的深度分析 ========== -->
+  <div class="deep-section" id="sec-deep">
+    <h3>🔍 核心标的深度研究（双核心+分散策略·AI集中度≤55%）</h3>
+    <div class="table-wrap">
+    <table class="deep-table">
+      <thead><tr><th>标的</th><th>定位</th><th>核心逻辑</th><th>分析师评级</th><th>目标价</th><th>上涨空间</th><th>风险</th><th>Tier</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:#60a5fa">NVDA</strong></td>
+          <td>AI芯片之王<br>核心①</td>
+          <td style="text-align:left;font-size:10.5px">GPU训练+推理垄断，Rubin GPU 2026H2出货，数据中心营收>$100B/年。CES 2026 DLSS4.5+Arm PC芯片。AI基础设施不可替代。</td>
+          <td><span class="tier-s">强烈买入</span><br>39位分析师</td>
+          <td>$255.82</td>
+          <td style="color:#34d399">+34%</td>
+          <td style="text-align:left;font-size:10px">估值已高(PE~60)、竞争加剧(AVGO/AMD定制ASIC)、出口管制</td>
+          <td><span class="tier-s">S级</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#60a5fa">AVGO ⬆️</strong></td>
+          <td>AI ASIC定制<br>核心② <span style="color:#34d399;font-size:10px">升级！</span></td>
+          <td style="text-align:left;font-size:10.5px">AI定制芯片(为Google/Meta/字节设计ASIC)+VMware软件整合+AI网络芯片(Jericho3-AI)。市值$1.57T，年营收$149亿+同比+25%。<strong style="color:#f1f5f9;">NVDA的最强互补。</strong></td>
+          <td><span class="tier-s">强力买入</span><br>27位分析师</td>
+          <td>$423.19</td>
+          <td style="color:#34d399">+24.3%</td>
+          <td style="text-align:left;font-size:10px">VMware整合风险、定制ASIC客户集中度、高负债率0.82</td>
+          <td><span class="tier-s">S级</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#60a5fa">TSM</strong></td>
+          <td>制造垄断</td>
+          <td style="text-align:left;font-size:10.5px">3nm先进制程全球>90%份额。为NVDA/AVGO/AMD/Apple代工。1月营收破4000亿台币。日本JASM升级3nm。</td>
+          <td><span class="tier-a">买入</span></td>
+          <td>~$420</td>
+          <td style="color:#34d399">+8.2%</td>
+          <td style="text-align:left;font-size:10px">台海地缘风险、估值极高位$388（52周92%）、全球扩产摊薄利润率。<strong>建仓条件：52周高点回撤≥10%（v7.4方案B）</strong></td>
+          <td><span class="tier-a">A级</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#60a5fa">MU</strong></td>
+          <td>HBM存储</td>
+          <td style="text-align:left;font-size:10.5px">HBM4 2026Q1末量产。NVIDIA上修Speed per Pin要求至>11Gbps。三足鼎立（SK海力士/三星/美光）。</td>
+          <td><span class="tier-b">买入</span></td>
+          <td>~$500</td>
+          <td style="color:#34d399">+16.6%</td>
+          <td style="text-align:left;font-size:10px"><strong style="color:#f87171">NVIDIA或排除MU HBM4首年量产</strong>、存储周期性强、中国竞争加剧。<strong>建仓条件：52周高点回撤≥15%（v7.4方案B）</strong></td>
+          <td><span class="tier-b">B级</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#94a3b8">AMD</strong></td>
+          <td>备选·追赶者</td>
+          <td style="text-align:left;font-size:10.5px">MI300X追赶NVDA，Q4营收$102.7亿+34%。但AI GPU份额仍<10%，花旗中性。</td>
+          <td><span class="tier-b">持有/中性</span></td>
+          <td>~$260</td>
+          <td style="color:#34d399">+23%</td>
+          <td style="text-align:left;font-size:10px">追赶者劣势明显、生态远逊CUDA、份额提升缓慢</td>
+          <td><span class="tier-c">C级备选</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#94a3b8">ARM</strong></td>
+          <td>备选·IP授权</td>
+          <td style="text-align:left;font-size:10.5px">芯片设计IP垄断(全球>90%移动芯片用ARM架构)。NVIDIA N1 PC芯片基于ARM。</td>
+          <td><span class="tier-b">买入</span></td>
+          <td>~$165</td>
+          <td style="color:#34d399">+42%</td>
+          <td style="text-align:left;font-size:10px"><strong style="color:#f87171">PE>100极度高估</strong>、软银控股51%流动性差、策略变更风险</td>
+          <td><span class="tier-c">C级备选</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#94a3b8">ASML</strong></td>
+          <td>备选·光刻垄断</td>
+          <td style="text-align:left;font-size:10.5px">EUV光刻机全球唯一供应商。High-NA EUV下一代已出货给Intel。</td>
+          <td><span class="tier-b">买入</span></td>
+          <td>~$850</td>
+          <td style="color:#34d399">+15%</td>
+          <td style="text-align:left;font-size:10px">2024Q3财报不及预期、中国出口管制影响收入、周期性</td>
+          <td><span class="tier-c">C级备选</span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:#7b8db0;line-height:1.8;">
+      <strong style="color:#f1f5f9;">回测优化后的"双核心"策略：</strong>
+      <strong style="color:#34d399">NVDA英伟达（GPU训练/推理）+ AVGO博通（定制ASIC/网络芯片）= AI芯片双龙头互补</strong>。
+      回测教训告诉我们：全押NVDA年化71%但风险极大，分散到AVGO博通可在保持高弹性的同时降低单一依赖。
+      AVGO的AI定制ASIC业务（为Google TPU/Meta MTIA/字节设计芯片）是NVDA的互补而非竞争——二者覆盖AI芯片的两条路线（通用GPU vs 定制ASIC）。
+      <br><strong style="color:#fb923c;">调整：AVGO博通从"备选"升级为"正式核心仓"。建议核心配比 NVDA英伟达 18% + AVGO博通 14% + TSM台积电 8%（事件驱动建仓）。QQQ 8%（科技弹性补充）+ VT 27%（全球底仓）。</strong>
+    </div>
+
+    <!-- AVGO分级响应+NVDA黄灯+双核心降级（v5.7/v5.8新增） -->
+    <div style="margin-top:20px;padding:18px 22px;background:rgba(248,113,113,0.04);border:1px solid rgba(248,113,113,0.12);border-radius:14px;">
+      <div style="font-size:13px;font-weight:700;color:#f87171;margin-bottom:12px;">⚠️ 双核心风险分级响应与降级协议</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">
+        <div style="padding:14px 18px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:12px;font-weight:700;color:#fb923c;margin-bottom:6px;">AVGO博通·乙方风险分级响应（v5.7）</div>
+          <div style="font-size:11px;line-height:1.8;color:#8892b0;">
+            <strong style="color:#facc15">黄灯：</strong>AI收入占比&lt;15% 或 单一大客户不再续约 → 暂停AVGO新增+评估替代（AMD/MRVL/VT）<br>
+            <strong style="color:#f87171">红灯：</strong>AI收入&lt;8% 或 ≥2客户自研替代 或 营收转负 → AVGO降级B级+30天减仓50%转VT+触发降级协议<br>
+            <strong style="color:#34d399">恢复：</strong>AI收入>15%持续2季+客户扩张
+          </div>
+        </div>
+        <div style="padding:14px 18px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:12px;font-weight:700;color:#fb923c;margin-bottom:6px;">NVDA英伟达·风险分级预警（v5.8）</div>
+          <div style="font-size:11px;line-height:1.8;color:#8892b0;">
+            <strong style="color:#facc15">黄灯：</strong>单季营收增速&lt;20% 或 毛利率降>5pp 或 数据中心占比连续2季萎缩 → 暂停NVDA新增+提升赛道扩展评估紧迫性<br>
+            <strong style="color:#f87171">红灯：</strong>连续2季营收转负 或 毛利率跌破50% → 触发降级协议<br>
+            <strong style="color:#34d399">恢复：</strong>增速>20%持续2季+毛利率企稳
+          </div>
+        </div>
+        <div style="padding:14px 18px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(248,113,113,0.12);">
+          <div style="font-size:12px;font-weight:700;color:#f87171;margin-bottom:6px;">双核心降级协议（单核心模式·v5.7/v5.8）</div>
+          <div style="font-size:11px;line-height:1.8;color:#8892b0;">
+            <strong>触发：</strong>AVGO红灯 或 NVDA红灯<br>
+            <strong>资金重新分配：</strong>受损标的释放资金 → 50%VT+30%健康核心（不超30%上限）+20%GLD<br>
+            <strong>降级模式约束：</strong>NVDA上限30%（硬上限·§7.4再平衡线自动从35%切至30%）｜ AI总占比≤45%<br>
+            <strong>联动：</strong>框架否证信号#4（SOX>50%回撤）监控频率从每季→每月；降级+任意1条否证=可启动复审<br>
+            <strong style="color:#34d399">恢复：</strong>受损标的信号全部绿灯持续2季 → 评估恢复双核心，§7.4恢复35%
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 简单估值框架（P2新增） -->
+    <div style="margin-top:20px;padding:18px 22px;background:rgba(96,165,250,0.04);border:1px solid rgba(96,165,250,0.12);border-radius:14px;">
+      <div style="font-size:13px;font-weight:700;color:#60a5fa;margin-bottom:12px;">📐 双核心简单估值框架（NVDA + AVGO · 安全边际参考）</div>
+      <div style="font-size:11.5px;color:#8892b0;line-height:1.8;margin-bottom:14px;">
+        <strong style="color:#f1f5f9">目的：</strong>用简洁可执行的估值指标判断"当前价格是否合理"，不追求精确定价（半导体股的DCF误差极大），而是建立"明显高估/合理/明显低估"三档直觉。每次全量更新时刷新下表数据。
+      </div>
+      <div class="table-wrap">
+      <table class="deep-table" style="font-size:11px;">
+        <thead>
+          <tr>
+            <th>指标</th>
+            <th>NVDA 英伟达</th>
+            <th>AVGO 博通</th>
+            <th>判断逻辑</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Forward P/E</strong><br><span style="color:#546380;font-size:10px">（未来12个月预期EPS）</span></td>
+            <td style="text-align:center"><strong style="color:#facc15">~30x</strong><br><span style="color:#546380;font-size:10px">当前$183 ÷ 预期FY26 EPS~$6</span></td>
+            <td style="text-align:center"><strong style="color:#facc15">~26x</strong><br><span style="color:#546380;font-size:10px">当前$325 ÷ 预期FY25 EPS~$12.5</span></td>
+            <td style="text-align:left;font-size:10px"><strong style="color:#34d399">< 25x = 低估区</strong>（积极加仓）<br><strong style="color:#facc15">25-40x = 合理区</strong>（正常定投）<br><strong style="color:#f87171">> 40x = 高估区</strong>（暂停新增，不卖出）<br><strong style="color:#fb923c">⚠️ 第一幕（2026-2030）：高估阈值放宽至50x</strong>（康波繁荣初期估值中枢系统性抬升）</td>
+          </tr>
+          <tr>
+            <td><strong>PEG</strong><br><span style="color:#546380;font-size:10px">（P/E ÷ 营收增速%）</span></td>
+            <td style="text-align:center"><strong style="color:#34d399">~0.5</strong><br><span style="color:#546380;font-size:10px">PE 30 ÷ 增速~60%</span></td>
+            <td style="text-align:center"><strong style="color:#34d399">~1.0</strong><br><span style="color:#546380;font-size:10px">PE 26 ÷ 增速~25%</span></td>
+            <td style="text-align:left;font-size:10px"><strong style="color:#34d399">PEG < 1 = 增速足以支撑估值</strong><br><strong style="color:#f87171">PEG > 2 = 增速放缓而估值未调整</strong>（⚠️高风险）<br>PEG>2是赛道扩展触发的辅助信号</td>
+          </tr>
+          <tr>
+            <td><strong>营收增速</strong><br><span style="color:#546380;font-size:10px">（同比·最近季度）</span></td>
+            <td style="text-align:center"><strong style="color:#34d399">~78%</strong><br><span style="color:#546380;font-size:10px">数据中心业务主驱动</span></td>
+            <td style="text-align:center"><strong style="color:#34d399">~25%</strong><br><span style="color:#546380;font-size:10px">AI+VMware双引擎</span></td>
+            <td style="text-align:left;font-size:10px">增速<20%连续两季 → 触发赛道扩展评估（§5.5）<br>增速由正转负 → 核心假设受损，启动框架复审</td>
+          </tr>
+          <tr>
+            <td><strong>毛利率</strong><br><span style="color:#546380;font-size:10px">（竞争护城河指标）</span></td>
+            <td style="text-align:center"><strong style="color:#34d399">~73%</strong><br><span style="color:#546380;font-size:10px">GPU定价权极强</span></td>
+            <td style="text-align:center"><strong style="color:#34d399">~77%</strong><br><span style="color:#546380;font-size:10px">ASIC+软件高毛利</span></td>
+            <td style="text-align:left;font-size:10px">毛利率下降>5个百分点 = 竞争加剧信号<br>NVDA毛利率是DeepSeek类事件后的首要观察指标</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:#546380;line-height:1.7;">
+        <strong style="color:#7b8db0">使用方法：</strong>每次全量更新时刷新上表四项指标。当Forward P/E进入高估区（>40x，第一幕期间>50x）且PEG>2，暂停对该标的的新增投入（不卖出已有持仓）。当Forward P/E进入低估区（<25x）且PEG<1，视为加仓信号的辅助确认。<strong style="color:#facc15">注意：此框架仅用于判断"是否明显高估/低估"，不用于精确计算目标价。半导体股的估值中枢随AI资本开支周期大幅波动，绝对数字不可刻舟求剑。第一幕（2026-2030）放宽高估阈值至50x，因康波繁荣初期AI infra标的估值中枢系统性抬升，40x可能过早触发暂停而错失核心建仓窗口；第二幕起恢复40x。</strong>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========== 腾讯解禁时间表 ========== -->
+  <div class="unlock-section" id="sec-unlock">
+    <h3>🔓 腾讯股票解禁时间表（0700.HK · 当前股价 HK$533 · 较高点-22%）<span style="font-size:11px;color:#7b8db0;font-weight:400;margin-left:8px;">HKD→RMB按0.88折算（USD/CNY 6.91基准）</span></h3>
+    <div class="table-wrap">
+    <table class="unlock-table">
+      <thead>
+        <tr>
+          <th>解禁时间</th>
+          <th>类型</th>
+          <th>数量/金额</th>
+          <th>估值（按当前~533HKD/股）</th>
+          <th>建议操作</th>
+          <th>操作难度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2026年8月</td>
+          <td>按年解禁</td>
+          <td>~3.3万港币</td>
+          <td>~3.3万 HKD ≈ 2.9万 RMB</td>
+          <td>卖出60-70%，保留30-40%</td>
+          <td><span class="diff-tag diff-easy">港股卖出</span></td>
+        </tr>
+        <tr>
+          <td>2026年9月</td>
+          <td>股票解禁</td>
+          <td>500股</td>
+          <td>~26.6万 HKD ≈ 23.4万 RMB</td>
+          <td>卖出60-70%，保留30-40%</td>
+          <td><span class="diff-tag diff-easy">港股卖出</span></td>
+        </tr>
+        <tr>
+          <td>2027年3月</td>
+          <td>股票解禁</td>
+          <td>~11万 RMB等值</td>
+          <td>~11万 RMB</td>
+          <td>全部卖出，换仓美股</td>
+          <td><span class="diff-tag diff-mid">需换汇</span></td>
+        </tr>
+        <tr>
+          <td>2027年8月</td>
+          <td>按年解禁</td>
+          <td>~3.3万港币</td>
+          <td>~3.3万 HKD ≈ 2.9万 RMB</td>
+          <td>全部卖出，换仓美股</td>
+          <td><span class="diff-tag diff-easy">港股卖出</span></td>
+        </tr>
+        <tr>
+          <td>2027年9月</td>
+          <td>股票解禁</td>
+          <td>500股</td>
+          <td>~26.6万 HKD ≈ 23.4万 RMB</td>
+          <td>全部卖出，换仓美股</td>
+          <td><span class="diff-tag diff-easy">港股卖出</span></td>
+        </tr>
+        <tr>
+          <td>2028年3月</td>
+          <td>股票解禁</td>
+          <td>~11万 RMB等值</td>
+          <td>~11万 RMB</td>
+          <td>全部卖出，注入主力仓</td>
+          <td><span class="diff-tag diff-mid">需换汇</span></td>
+        </tr>
+        <tr>
+          <td>2028年8月</td>
+          <td>按年解禁</td>
+          <td>~3.3万港币</td>
+          <td>~3.3万 HKD ≈ 2.9万 RMB</td>
+          <td>全部卖出，注入主力仓</td>
+          <td><span class="diff-tag diff-easy">港股卖出</span></td>
+        </tr>
+        <tr class="unlock-total">
+          <td colspan="2"><strong>合计</strong></td>
+          <td colspan="2"><strong>~78万 RMB</strong>（500股×2≈53.3万HKD + 3.3万×3=10万HKD + 11万RMB×2=22万RMB）<br><span style="font-size:11px;color:#34d399;">较上版微升（腾讯533 vs 532）</span></td>
+          <td colspan="2">分3年到账，是重要的弹药补充</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="margin-top: 14px; font-size: 12px; color: #7b8db0; line-height: 1.8;">
+      <strong style="color:#f87171">⚠️ 腾讯当前HK$533。</strong>解禁总额约<strong>78万RMB</strong>。52周高683，当前-22%。RMB估值因汇率（6.91）折算：HKD→RMB转换比例~0.88，500股RMB估值~23.4万RMB。策略不变。<br>
+      <strong style="color:#60a5fa;">2026年解禁建议卖出60-70%</strong>（保留部分享受AI转型红利），
+      <strong style="color:#a78bfa;">2027-2028年解禁建议全部卖出</strong>（减少单一公司风险集中度，工资已依赖腾讯）。<br>
+      <strong style="color:#facc15;">💱 港币临时存放方案：</strong>腾讯解禁卖出所得为HKD。正常情况直接换汇为USD买入美股。若暂时不想操作，港币可临时存放于：① 港卡活期（利率低但灵活）② 港币货币基金（如南方东英货币基金，年化~4%）③ 美元短债ETF（SHY）直接以港币买入。
+    </div>
+  </div>
+
+  <!-- ========== 购汇换汇策略 ========== -->
+  <div class="info-section theme-yellow" id="sec-forex">
+    <h3 style="color:#facc15;">💱 购汇换汇策略（含汇率状态更新）</h3>
+    <div class="info-grid">
+      <div class="info-card">
+        <h4 style="color:#34d399;">✅ 核心结论</h4>
+        <p>
+          <strong style="color:#f1f5f9">人民币升值 = 你的RMB更值钱 = 换汇更划算。</strong>同样1万RMB：汇率7.30时换$1,370，汇率6.90时换$1,449。<strong style="color:#34d399">汇率越低，同样RMB换到越多USD，应该积极分批换汇。</strong><br>
+          你未来30年资产以美元计价为主，不必纠结短期汇率波动。分批换汇均摊风险即可。<br>
+          <strong style="color:#34d399">✅ 实时状态：USD/CNY 6.909（2/16确认）。当前汇率处于近年低位，换汇窗口良好。月结余可积极分批换入USD。</strong>
+        </p>
+      </div>
+      <div class="info-card">
+        <h4 style="color:#60a5fa;">📋 操作规则</h4>
+        <p>
+          ① <strong>分批换汇：</strong>全年分4-6次，每次腾讯解禁到账/月结余积累后换一笔，均摊汇率波动<br>
+          ② <strong>渠道：</strong>港卡直接HKD→USD（汇率优于内地）｜ 或RMB→HKD走富途/长桥通道<br>
+          ③ <strong style="color:#34d399">✅ 有利区：</strong>USD/CNY &lt; 7.0 → <strong>换汇划算</strong>（人民币强势，同样RMB换更多USD）<strong style="color:#34d399"> ← 当前6.9017 ✅</strong><br>
+          ④ <strong style="color:#fb923c">⚠️ 不利区：</strong>USD/CNY &gt; 7.30 → 换汇成本高（人民币走弱，考虑等回落或减少单次换汇量）<br>
+          ⑤ <strong>对冲：</strong>保留15-20%资产为RMB（私募+未来红利股），不全部美元化<br>
+          ⑥ <strong style="color:#facc15">注意区分两个影响方向：</strong>人民币升值（USD/CNY↓）→ ✅换汇更划算 + ❌已持有美元资产的RMB估值缩水。前者是正面的，后者是负面的，不要混淆
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 50万量化私募策略 ========== -->
+  <div class="private-section" id="sec-private">
+    <h3>📊 50万量化私募策略（独立板块·此前遗漏已补全）</h3>
+    <div style="font-size:12.5px;color:#8892b0;line-height:1.8;margin-bottom:16px;">
+      <strong style="color:#f1f5f9">背景：</strong>你当前持有50万A股量化私募。2025年百亿级量化私募平均收益<strong style="color:#34d399">37.61%</strong>（全部正收益），行业整体表现优异。但量化策略存在"策略拥挤→集体回撤"风险（2024年2月曾出现集体大幅回撤）。<br>
+      <strong style="color:#f1f5f9">定位：</strong>这50万是你当前资产中的<strong style="color:#fb923c">"进攻仓·Alpha来源"</strong>，与美股标的形成境内+境外双线进攻。<br>
+      <strong style="color:#34d399">⚡ 黑翼CTA-S1的组合对冲功能：</strong>CTA趋势跟踪策略在股市暴跌时通常正收益或低回撤（做空趋势获利），是组合天然的尾部风险对冲工具。因此CTA-S1不仅是"进攻仓Alpha来源"，更是美股组合的<strong style="color:#34d399">反向保护层</strong>。赎回CTA意味着同时失去Alpha来源和尾部对冲——赎回门槛应高于纯进攻型产品。
+    </div>
+    <div class="pv-grid">
+      <div class="pv-card">
+        <h4 style="color:#fb923c">📌 当前状态（2026/2/5更新）</h4>
+        <p>
+          <strong style="color:#f1f5f9">本金：</strong>50万RMB（10万CTA + 40万指增）<br>
+          <strong style="color:#f1f5f9">建仓日期：</strong>2026年1月1日（持有期起算基准日）<br>
+          <strong style="color:#f1f5f9">产品①：</strong>黑翼CTA-S1（10万）— CTA策略 ｜ 收益 <strong style="color:#34d399">+4.80%</strong> ｜ 回撤 0.00%<br>
+          <strong style="color:#f1f5f9">产品②：</strong>黑翼尊享A500指增（40万）— A500指数增强 ｜ 收益 <strong style="color:#34d399">+6.78%</strong> ｜ 回撤 -0.68%<br>
+          <strong style="color:#f1f5f9">组合市值：</strong><strong style="color:#34d399">~53.19万（+6.38%）</strong><br>
+          <strong style="color:#f1f5f9">当前操作：</strong><span class="op-tag op-hold" style="font-size:11px">长期持有·信号驱动退出</span>
+        </p>
+      </div>
+      <div class="pv-card">
+        <h4 style="color:#34d399">📋 年度评估机制（每年6月+12月）</h4>
+        <p>
+          ① 对比业绩基准：年化>10%→继续持有 ｜ <10%→启动赎回评估<br>
+          ② 对比沪深300：连续6个月跑输→赎回50%<br>
+          ③ 检查管理规模：膨胀>50亿→策略拥挤风险上升<br>
+          ④ 检查回撤：年内最大回撤>15%→赎回全部<br>
+          ⑤ 核心人员变动：基金经理/量化研究员离职→赎回全部<br>
+          ⑥ A股熊市：沪深300跌幅>25%→赎回全部转入安全垫
+        </p>
+      </div>
+      <div class="pv-card">
+        <h4 style="color:#60a5fa">📅 操作策略：长期持有 · 信号驱动退出</h4>
+        <p>
+          <strong style="color:#f1f5f9">核心原则：</strong>长期持有，不主动择时赎回。<strong style="color:#34d399">仅当退出信号触发时才操作。</strong><br>
+          <strong style="color:#34d399">📌 用户已明确：短期内不会动私募50万。AI仅在退出信号触发时主动提醒。</strong><br>
+          <strong style="color:#f1f5f9">赎回到账时间：</strong><strong style="color:#facc15">约7天</strong>（提交赎回申请后7个工作日内到账）<br>
+          <strong style="color:#f1f5f9">退出信号触发→赎回：</strong>见信号系统「私募退出信号」6项（任满1项即启动赎回评估）<br>
+          <strong style="color:#f1f5f9">保底底线：</strong>净值跌破0.75（亏损25%）→<strong style="color:#f87171">立即全额赎回（7天内到账）。</strong><br>
+          <strong style="color:#f1f5f9">赎回资金去向：</strong>红利股+债券（攻守转换期）或补充安全垫（紧急情况）或<strong style="color:#60a5fa">注入美股抄底（若触发2030回调预案）</strong><br>
+          <em style="font-size:11px;color:#7b8db0">注：7天赎回周期意味着流动性风险可控。在极端行情中7天的时滞可接受。后续每次更新投资图时，我会重新评估私募状态。</em>
+        </p>
+      </div>
+      <div class="pv-card">
+        <h4 style="color:#f87171">⚠️ 核心风险提示</h4>
+        <p>
+          <strong>① 策略拥挤风险：</strong>2025年量化私募全行业正收益→资金涌入→策略同质化→下一次回撤可能更剧烈<br>
+          <strong>② AI+量化军备竞赛：</strong>头部私募已部署AI大模型，中小私募可能被淘汰<br>
+          <strong>③ 流动性风险：</strong>赎回T+7个工作日到账，极端行情中7天时滞可接受<br>
+          <strong>④ 黑天鹅：</strong>2024年2月量化集体大回撤事件可能重演<br>
+          <strong style="color:#f1f5f9">核心原则：宁可少赚，不可亏损本金超25%。</strong>
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:#7b8db0;line-height:1.8;">
+      <strong>与美股的关系：</strong>50万私募（A股Alpha）+ 美股标的（全球AI Beta）= 双线进攻。私募赚A股市场内部的Alpha（选股/因子/动量等），美股赚全球AI产业的Beta和个股Alpha。两者低相关，组合分散风险。
+    </div>
+  </div><!-- private-section end -->
+
+  <!-- ========== 五幕人生概览（含周金涛核心理论映射+终局目标+家庭财务） ========== -->
+  <div class="five-acts" id="sec-acts">
+    <h3>🎭 五幕人生 · 康波驱动 · 全生命周期架构</h3>
+    <div class="acts-grid">
+      <div class="act-card">
+        <div class="act-num" style="color:#60a5fa">I</div>
+        <div class="act-title">播种进攻</div>
+        <div class="act-age">31-35岁 · 2026-2030</div>
+        <div class="act-desc">康波回升→繁荣初期<br>AI权益为主·全力建仓定投<br><strong style="color:#60a5fa">目标：种子→主力</strong></div>
+        <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);font-size:12px;"><strong style="color:#facc15">中性544万</strong><span style="color:#546380;font-size:11px"> · 年化12-16% · 累计投入370万</span></div>
+        <div style="font-size:11px;color:#c4b5fd;font-style:italic;margin-top:4px;">"未来5年是你人生中第一次全球性资产机会。" — 周金涛</div>
+      </div>
+      <div class="act-card">
+        <div class="act-num" style="color:#a78bfa">II</div>
+        <div class="act-title">收割转守</div>
+        <div class="act-age">36-40岁 · 2031-2035</div>
+        <div class="act-desc">繁荣顶部→衰退<br>信号减仓·红利+债券接棒<br><strong style="color:#a78bfa">目标：锁定利润</strong></div>
+        <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);font-size:12px;"><strong style="color:#facc15">中性949万</strong><span style="color:#546380;font-size:11px"> · 年化7.5% · 被动收入≥30万/年（独立覆盖支出）</span></div>
+        <div style="font-size:11px;color:#c4b5fd;font-style:italic;margin-top:4px;">"40岁以上的人，第一目标是保住已拥有的财富。" — 周金涛</div>
+      </div>
+      <div class="act-card">
+        <div class="act-num" style="color:#fb923c">III</div>
+        <div class="act-title">防御过冬</div>
+        <div class="act-age">41-50岁 · 2036-2045</div>
+        <div class="act-desc">康波衰退→萧条<br>现金为王·红利+黄金+债券<br><strong style="color:#fb923c">目标：资产保全</strong></div>
+        <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);font-size:12px;"><strong style="color:#facc15">中性~1,636万</strong><span style="color:#546380;font-size:11px"> · 年化4-6% · 不追增长，守住就是胜利</span></div>
+        <div style="font-size:11px;color:#c4b5fd;font-style:italic;margin-top:4px;">"萧条和衰退期间，黄金和现金是最好的资产。" — 周金涛</div>
+      </div>
+      <div class="act-card">
+        <div class="act-num" style="color:#f472b6">IV</div>
+        <div class="act-title">再播种</div>
+        <div class="act-age">51-55岁 · 2046-2050</div>
+        <div class="act-desc">萧条尾声→新康波<br>抄底第七波技术<br>量子/核聚变/生物?<br><strong style="color:#f472b6">目标：二次进攻</strong></div>
+        <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);font-size:12px;"><strong style="color:#facc15">中性~2,700万</strong><span style="color:#546380;font-size:11px"> · 年化8-12% · 被动收入80-150万/年</span></div>
+        <div style="font-size:11px;color:#c4b5fd;font-style:italic;margin-top:4px;">"每次康波的技术创新都会带来新的主导产业。" — 周金涛</div>
+      </div>
+      <div class="act-card">
+        <div class="act-num" style="color:#34d399">V</div>
+        <div class="act-title">传承守成</div>
+        <div class="act-age">56-70岁 · 2051-2065</div>
+        <div class="act-desc">新康波繁荣期<br>极低风险配置<br>资产传承规划<br><strong style="color:#34d399">目标：安享+传承</strong></div>
+        <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);font-size:12px;"><strong style="color:#34d399">终局3,500-5,500万+</strong><span style="color:#546380;font-size:11px"> · 被动收入120-200万/年 · 家族信托</span></div>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:#7b8db0;line-height:1.8;text-align:center;">
+      <strong style="color:#f1f5f9">周金涛框架：</strong>"人生发财靠康波"——第六波康波（AI/新能源）~2025-2050 → 繁荣期~2025-2035 → 衰退期~2035-2040 → 萧条期~2040-2050 → 第七波~2050+<br>
+      <strong style="color:#f87171">核心原则：前5年进攻（第一幕），中5年转守（第二幕），后20年防御+再播种+传承（第三四五幕）。前两幕赚钱，后三幕守钱。</strong><br>
+      <span style="font-size:11px;color:#546380">⚠️ 康波定位以信号驱动而非日历驱动。详细数字见下方<a href="#sec-calc" style="color:#60a5fa">资产测算表</a>。</span>
+    </div>
+
+    <!-- 框架否证清单（P1新增） -->
+    <div id="sec-falsify" style="margin-top:24px;padding:20px 24px;background:linear-gradient(135deg,rgba(248,113,113,0.06),rgba(251,146,60,0.04));border:1px solid rgba(248,113,113,0.15);border-radius:14px;">
+      <div style="font-size:14px;font-weight:700;color:#f87171;margin-bottom:12px;">🚨 框架否证清单（康波整体错误时的应急预案）</div>
+      <div style="font-size:12px;color:#8892b0;line-height:1.8;margin-bottom:14px;">
+        <strong style="color:#f1f5f9">设计目的：</strong>当前方案以"第六波康波已启动、AI是主导产业"为核心假设。如果这个假设整体错误（AI不是康波级别的技术革命，或我们处于康波衰退而非回升），整套五幕时间线和赛道押注将系统性偏离。框架否证清单定义"什么证据能推翻康波假设"以及"推翻后怎么办"，避免在框架错误时还死守不放。
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">
+        <div style="padding:14px 18px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:12px;font-weight:700;color:#f87171;margin-bottom:6px;">否证信号（满足≥2条启动框架复审）</div>
+          <div style="font-size:11.5px;line-height:1.8;color:#8892b0;">
+            ❶ 全球AI相关资本开支连续<strong style="color:#facc15">4个季度</strong>同比下降（非单季波动而是持续收缩）<br>
+            ❷ AI龙头公司（NVDA/MSFT/GOOG/META/AMZN）中≥3家裁撤AI部门或大幅削减AI投资<br>
+            ❸ AI技术进步停滞：GPT-5/Gemini 2/Claude 4等下代模型<strong style="color:#facc15">发布后12个月</strong>仍无显著能力提升<br>
+            ❹ 全球半导体行业进入持续萧条（SOX指数从高点回撤>50%持续>18个月）<br>
+            ❺ 出现替代性主导技术（如核聚变/量子计算/生物技术）明确进入商业化加速期，AI沦为配角<br>
+            ❻ <span style="color:#fb923c">AI电力供给瓶颈结构化（v6.2·前哨信号·0.5权重）：</span>美国≥3州对数据中心电力配额限制/排队>24月 <strong>或</strong> ≥2家科技大厂因电力不足推迟数据中心上线——电力是AI扩张物理瓶颈，芯片卖不出=NVDA/AVGO增速天花板
+          </div>
+        </div>
+        <div style="padding:14px 18px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:12px;font-weight:700;color:#fb923c;margin-bottom:6px;">否证后应急预案</div>
+          <div style="font-size:11.5px;line-height:1.8;color:#8892b0;">
+            <strong style="color:#f1f5f9">阶段一·确认否证（否证信号≥2条）：</strong><br>
+            → 启动框架复审（与基准镜像组合复审合并执行）<br>
+            → 将NVDA+AVGO占比从当前水平降至各≤10%<br>
+            → 释放资金的50%转入VT（全球分散），50%转入GLD+BNDW（防御）<br><br>
+            <strong style="color:#f1f5f9">阶段二·全面撤退（否证信号≥4条 或 基准镜像连续24个月跑赢实际组合）：</strong><br>
+            → 放弃康波五幕框架，切换至基准镜像配置（80%VT+20%BNDW）<br>
+            → 个股全部清仓（保留VT仓位不动）<br>
+            → 信号系统降级为"仅监控紧急避险信号"<br>
+            → 后续新增资金全部进入基准配置
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:#546380;line-height:1.7;">
+        <strong style="color:#fb923c">与双核心降级的联动（v5.8）：</strong>双核心降级已激活时，否证信号#4（SOX>50%回撤）监控频率从每季提升至每月。降级本身视为#4的0.5权重辅助信号——降级+任意1条正式否证=等同于2条，可启动框架复审。
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:#546380;line-height:1.6;">
+        <strong>⚠️ 否证≠恐慌卖出：</strong>否证清单是预设的、理性的退出路径，在冷静时制定，在危机时执行。它与减仓信号独立运行——减仓信号应对短期市场过热，否证清单应对长期框架失效。每次全量更新时逐条检查否证信号是否触发。
+      </div>
+    </div>
+
+    <!-- 家庭财务概览（融入五幕） -->
+    <div id="sec-finance" style="margin-top:24px;padding:20px 24px;background:linear-gradient(135deg,rgba(52,211,153,0.04),rgba(96,165,250,0.04));border:1px solid rgba(52,211,153,0.12);border-radius:14px;">
+      <div style="font-size:14px;font-weight:700;color:#34d399;margin-bottom:14px;">👨‍👩‍👦 家庭财务基座</div>
+      <!-- 关键指标横排 -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px;">
+        <div style="padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:10px;color:#7b8db0;">家庭年收入</div>
+          <div style="font-size:18px;font-weight:700;color:#34d399;">~60.8万</div>
+          <div style="font-size:10px;color:#546380;">你50万 + 配偶10.8万</div>
+        </div>
+        <div style="padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:10px;color:#7b8db0;">年支出目标</div>
+          <div style="font-size:18px;font-weight:700;color:#facc15;">30万</div>
+          <div style="font-size:10px;color:#546380;">含住房+车+育儿+弹性消费</div>
+        </div>
+        <div style="padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:10px;color:#7b8db0;">财务自由门槛</div>
+          <div style="font-size:18px;font-weight:700;color:#f472b6;">857万</div>
+          <div style="font-size:10px;color:#546380;">30万÷3.5% · 不依赖配偶</div>
+        </div>
+        <div style="padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:10px;color:#7b8db0;">预计达成</div>
+          <div style="font-size:18px;font-weight:700;color:#60a5fa;">37-38岁</div>
+          <div style="font-size:10px;color:#546380;">2032-2033年 · 第二幕中期</div>
+        </div>
+        <div style="padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:10px;color:#7b8db0;">核心优势</div>
+          <div style="font-size:18px;font-weight:700;color:#34d399;">无贷款</div>
+          <div style="font-size:10px;color:#546380;">有房有车 · 年省12-15万</div>
+        </div>
+        <div style="padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:10px;color:#7b8db0;">安全垫</div>
+          <div style="font-size:18px;font-weight:700;color:#34d399;">20万 ✅</div>
+          <div style="font-size:10px;color:#546380;">银行卡活期 · 可撑8个月+</div>
+        </div>
+      </div>
+      <!-- 三档门槛 + 压力测试（折叠） -->
+      <details style="margin-top:4px;">
+        <summary style="font-size:12px;color:#60a5fa;cursor:pointer;font-weight:600;padding:4px 0;">展开：三档门槛 · 压力测试 · 提取率说明</summary>
+        <div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;font-size:12px;line-height:1.7;color:#8892b0;">
+          <div style="padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04);">
+            <strong style="color:#f472b6">🎯 三档门槛</strong><br>
+            <strong>基本自由：</strong>30万÷3.5% = <strong style="color:#34d399">857万</strong>（2032-2033年）<br>
+            <strong>舒适自由：</strong>45万÷3.5% = 1,286万（2035-2036年）<br>
+            <strong>富裕自由：</strong>60万÷3.5% = 1,714万（2037-2038年）<br>
+            <span style="font-size:11px;color:#546380">配偶10.8万/年为额外安全边际，不计入门槛</span>
+          </div>
+          <div style="padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04);">
+            <strong style="color:#f87171">⚠️ 压力测试</strong><br>
+            <strong>2033年被裁（悲观）：</strong>668万×3.5%=23.4万 vs 30万支出 → <strong style="color:#f87171">缺口6.6万/年</strong>，安全垫撑3年<br>
+            <span style="color:#546380;font-size:11px">若配偶在职：23.4+10.8=34.2万>30万 ✅</span><br>
+            <strong>2029年被裁（极端）：</strong>400万×3.5%=14万 vs 30万 → <strong style="color:#f87171">缺口16万/年</strong>，需配偶收入兜底或削减支出
+          </div>
+          <div style="padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.04);">
+            <strong style="color:#facc15">📐 为何3.5%而非4%</strong><br>
+            Trinity Study 4%规则基于30年退休期。31-38岁退休意味着42-50年+期限，学术共识50年期安全提取率为3-3.5%。用4%会在第40-50年面临资产耗尽风险。
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ========== 月度甘特图时间轴 ========== -->
+  <div class="timeline" id="sec-gantt">
+    <h3 style="font-size:20px;font-weight:700;color:#f1f5f9;margin-bottom:20px;text-align:center;">📅 全生命周期操作路线图（五幕 · 2026-2065 · 月度甘特图）</h3>
+
+    <!-- ===== 2026 ===== -->
+    <div class="gantt-year">
+      <div class="gantt-year-header">
+        <span class="gantt-year-label gy-1">2026</span>
+        <span class="gantt-year-title">蛰伏播种 · 建立体系</span>
+        <span class="gantt-year-meta">31岁 · 4/20预产期 · 萧条尾声→复苏前夜 · 腾讯解禁~27万RMB</span>
+      </div>
+      <div class="month-track">
+        <div class="month-cell">1月</div>
+        <div class="month-cell mc-cur">2月★</div>
+        <div class="month-cell mc-act">3月</div>
+        <div class="month-cell mc-evt">4月🍼</div>
+        <div class="month-cell mc-act">5月</div>
+        <div class="month-cell mc-act">6月</div>
+        <div class="month-cell mc-act">7月</div>
+        <div class="month-cell mc-money">8月💰</div>
+        <div class="month-cell mc-money">9月💰</div>
+        <div class="month-cell mc-act">10月</div>
+        <div class="month-cell mc-act">11月</div>
+        <div class="month-cell mc-act">12月</div>
+      </div>
+      <div class="gantt-events">
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q1">2月</span>
+          <div class="gantt-content"><strong style="color:#34d399">种子仓第①批（35%≈3.5万HKD）：✅ 已于2/13完成建仓</strong><br>
+            <span style="font-size:11.5px;">
+              · <strong style="color:#60a5fa">NVDA 英伟达</strong> 7股@$187.35（成本$1,311） — S级核心①<br>
+              · <strong style="color:#60a5fa">AVGO 博通</strong> 3股@$330.60（成本$992） — S级核心②<br>
+              · <strong style="color:#60a5fa">VT 全球股票ETF</strong> 14股@$146.01（成本$2,044） — 底仓<br>
+              · <strong style="color:#f1f5f9">合计：$4,347（≈3.39万HKD）</strong>。AI/半导体占53%（≤55%✅），VT底仓占47%。<br>
+              <strong style="color:#34d399;font-size:10.5px">✅ 汇率：USD/CNY 6.9017，人民币走强=换汇划算。月结余可积极分批换入USD。</strong>
+            </span>
+          </div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q1">3月</span>
+          <div class="gantt-content"><strong style="color:#34d399">种子仓第②批（35%≈3.5万HKD）：✅ 已于2/17盘前完成建仓</strong><br>
+            <span style="font-size:11.5px;">
+              · <strong style="color:#60a5fa">NVDA 英伟达</strong> 4.9328股@$182.45（成本$900） — S级核心①加码<br>
+              · <strong style="color:#60a5fa">AVGO 博通</strong> 2.3649股@$325.59（成本$770） — S级核心②加码<br>
+              · <strong style="color:#60a5fa">QQQ 纳指100ETF</strong> 1.7股@$601.37（成本$1,022） — 科技弹性补充（碎股）<br>
+              · <strong style="color:#60a5fa">VT 全球股票ETF</strong> 6.9848股@$146.03（成本$1,020） — 全球底仓加码<br>
+              · <strong style="color:#f1f5f9">合计：$3,712（≈2.89万HKD）</strong>。触发条件：QQQ $598.15＜$605回调加速。AI/半导体占比49%（≤55%✅）。<br>
+              <strong style="color:#546380;font-size:10.5px">机动0.6万HKD未使用（预算3.5万-实际2.89万=余0.6万），留作③批或突发回调。</strong>
+            </span>
+          </div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(248,113,113,0.15);color:#f87171">4/20🍼</span>
+          <div class="gantt-content"><strong style="color:#f87171">预产期！</strong>4月20日前必须完成：✅ 安全垫20万已就位 ✅ 保险全配齐 ✅ 种子仓第③批<br>
+            <strong>种子仓第③批（30%≈3.0万HKD·v5.7配比重评估）：</strong><span style="color:#a78bfa">时间底线4月中旬 ｜ 回调加速：QQQ跌至~$573以下（从高点$637回撤≥10%）立即执行</span><br>
+            <span style="color:#facc15;font-size:11px">⚠️ 穿透后科技暴露65.1%触及65%上限 → ③批侧重VT稀释，降低NVDA/AVGO增量，替代标的统一改为VT（不再换QQQ）</span><br>
+            <span style="font-size:11.5px;">
+              · <strong style="color:#60a5fa">VT 全球股票ETF</strong> 1.0万HKD（≈$1,300）— <strong style="color:#34d399">核心稀释力量</strong>，三批完成后VT占比>50%成为最大持仓<br>
+              · <strong style="color:#60a5fa">TSM 台积电</strong> 0.5万HKD（≈$640，约1-2股）— 若52周高点回撤≥10%再买入（v7.4方案B），否则转入VT<br>
+              · <strong style="color:#60a5fa">GLD黄金ETF/2840港股金ETF</strong> 0.5万HKD（≈$610）— 3%底线规则：GLD&lt;3%时优先买入（当前GLD=2.9%·已建仓·继续补仓至≥3%），否则转入VT<br>
+              · <strong style="color:#60a5fa">MU 美光科技</strong> 0.4万HKD（≈$510）— 若52周高点回撤≥15%再买入（v7.4方案B），否则转入VT<br>
+              · <strong style="color:#60a5fa">NVDA 英伟达</strong> 0.3万HKD（≈$400）— 降低增量（NVDA已是27.3%最大个股持仓）<br>
+              · <strong style="color:#60a5fa">AVGO 博通</strong> 0.3万HKD（≈$400）— 降低增量（AVGO已占22%）
+            </span>
+            <br><strong style="color:#a78bfa">产后进入3个月静默期（5-7月），启动简化定投（见下）</strong></div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q2">5-7月</span>
+          <div class="gantt-content"><strong>静默期简化定投（3个月 · 零决策模式）：</strong><br>
+            <span style="font-size:11.5px;">
+              <strong style="color:#60a5fa">资金来源：</strong>月结余 ~1.5-2.5万RMB → 分批换汇为USD注入券商账户<br>
+              <strong style="color:#60a5fa">📅 每月15日固定买入，基础2标的（GLD占组合&lt;3%时升级为3标的）：</strong><br>
+              · <strong style="color:#34d399">VT 全球ETF</strong> 50%（~$1,000-1,750）— 最分散、最省心<br>
+              · <strong style="color:#34d399">NVDA 英伟达</strong> 50%（~$1,000-1,750）— 核心①，维持仓位积累<br>
+              <strong style="color:#fb923c;">规则：</strong>① 每月15日一次性买入，不看盘不调仓不加新标的 ② 结余不足1万→只买VT $1,000（与2027降档机制统一） ③ 私募不动、已有持仓不动 ④ <strong style="color:#34d399">GLD 3%底线规则：</strong>当前GLD=2.9%（已建仓·接近3%底线），静默期初期如GLD仍&lt;3%则升级为3标的模式——VT 40%+NVDA 40%+GLD 20%，GLD达到3%后恢复2标的（牛市高位保护规则同样适用于3标的模式） ⑤ 金价$5,000+时GLD买入可分月平摊（柔性节奏指导·非硬性阈值）<br>
+              <strong style="color:#facc15">牛市高位保护（v5.7）：</strong>进入静默期时减仓信号≥1/7 → 定投改为VT 80%+NVDA 20%；≥2/7 → 定投改为VT 100%（纯宽基零个股）<br>
+              <strong style="color:#f87171">紧急打断（v5.8）：</strong>静默期内减仓信号升至≥3/7、MDD≥25%、单标的>35% → 暂停定投/执行减仓/执行再平衡（零例外优先于静默期规则）<br>
+              <strong style="color:#facc15;">3个月总投入约 $6,000-10,000（≈4.5-7.5万RMB）</strong>
+            </span>
+            <br><strong style="color:#a78bfa">核心原则：产后精力归零，用最少动作保持"不下车"。基础2标的（条件满足可升3标的）、1个日期、1次操作/月。</strong></div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q3">8月💰</span>
+          <div class="gantt-content"><strong style="color:#facc15">腾讯按年解禁~3.3万HKD：</strong>观察1-2周后卖出60-70%（~2.3万HKD），保留30-40%<br>
+            <strong style="color:#34d399">恢复5标的月度定投（§6.3·静默期结束）：</strong><br>
+            <span style="font-size:11.5px;">
+              · NVDA $600-800 + AVGO $500-650 + VT $700-900 + QQQ $200-350 + GLD $200-300（3%底线规则：GLD&lt;3%时每月必买·≥3%后正常DCA维持）<br>
+              · <strong style="color:#fb923c">降档机制：</strong>月结余≥2.5万→$3,000全投 ｜ 1.5-2.5万→$2,200（GLD&lt;3%时削QQQ保留GLD·GLD≥3%时削GLD保留QQQ，仅四标的） ｜ 1-1.5万→$1,500（仅NVDA+AVGO+VT） ｜ &lt;1万→暂停或仅VT $1,000<br>
+              · 腾讯卖出的~2.3万HKD换汇后→优先补权重偏低标的（不叠加到当月定投，单独执行一次性加仓）
+            </span>
+          </div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q3">9月💰</span>
+          <div class="gantt-content"><strong style="color:#facc15">腾讯500股解禁~26.6万HKD（≈23.4万RMB）：</strong>卖出60-70%（~16-19万HKD）<br>
+            <span style="font-size:11.5px;">
+              · 60%→换汇为USD注入美股（优先补TSM/MU若已达回撤建仓条件，否则按5标的目标配比分配）<br>
+              · 40%→港币现金留给2027年<br>
+              · <strong style="color:#60a5fa">TSM/MU事件驱动窗口：</strong>若TSM 52周高点回撤≥10%或MU回撤≥15%条件达成（v7.4方案B），用腾讯资金一次性买入（§6.3·不做月度定投）
+            </span><br>
+            <strong style="color:#34d399">常规月度定投继续：</strong>5标的$2,200-3,000/月（同8月方案，腾讯资金单独处理不影响月度节奏）
+          </div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q4">10-12月</span>
+          <div class="gantt-content"><strong style="color:#34d399">月度定投持续（5标的·$2,200-3,000/月）：</strong>NVDA+AVGO+VT+QQQ+GLD按§6.3方案执行，降档机制同上<br>
+            <span style="font-size:11.5px;">
+              · 新生儿支出第二季度可能上升，降档机制确保现金流紧张时不中断<br>
+              · <strong style="color:#60a5fa">购汇节奏：</strong>月结余RMB→分批换汇为USD注入券商账户（参照§5.2换汇策略）
+            </span><br>
+            <strong style="color:#fb923c">12月年终检查清单：</strong><br>
+            <span style="font-size:11.5px;">
+              · ① 实际占比 vs 目标占比→偏离>5%再平衡<br>
+              · ② 全年收益率 vs 基准镜像Alpha<br>
+              · ③ 私募退出信号检查（6项）<br>
+              · ④ 确认2027年定投方案（§6.3）启动参数<br>
+              · ⑤ 安全垫覆盖月数校验（§7.6·目标≥6个月）
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="gantt-summary gs-1">
+        <strong>2026年资金流：</strong>初始83.8万(含53万私募+$15,447美股券商≈10.7万RMB+20万安全垫)+月结余~20万+配偶结余~5万+腾讯解禁~27万 = 年末预估<strong>~157-167万</strong>（悲观8%~157万·中性12%~162万·乐观16%~167万）。关键词：<strong>加固防线、播种、积攒弹药、不犯错。安全垫20万✅已达标（银行卡），月结余100%可投资。</strong>
+        <br><strong style="color:#60a5fa;">种子仓三批汇总（≈$15,400 · AI/半导体≤55%✅ · v5.7③批配比重评估）：</strong>NVDA英伟达 20% ｜ AVGO博通 17% ｜ VT全球ETF 35% ｜ QQQ纳指100 7% ｜ MU美光 3%（需52周高点回撤≥15%·v7.4方案B） ｜ TSM台积电 4%（需52周高点回撤≥10%·v7.4方案B） ｜ GLD黄金ETF 4% ｜ 机动 10%
+        <br><span style="font-size:11px;color:#a78bfa">AI/半导体直接占比：20+17+4+3=<strong>44%</strong>（≤55%目标✅）。穿透后科技暴露：最可能情景（TSM/MU回撤条件未达→转VT·GLD按3%底线优先买入）约<strong>57%</strong>（≤65%✅），最乐观情景（全条件达成）约<strong>63%</strong>（≤65%✅）。③批核心调整：VT占比大幅提升+替代标的统一改为VT（不再换QQQ）→穿透暴露从65.1%降至安全区。</span>
+        <br><strong style="color:#34d399;">下半年节奏（5-12月）：</strong>5-7月静默期2标的简化定投（~$6,000-10,000）→ 8月起恢复5标的定投（~$2,500/月×5个月≈$12,500）+ 腾讯两笔解禁（~30万HKD）→ 12月年终检查。<strong>全年新增投入预估：种子仓$15,400 + 静默期$6,000-10,000 + 下半年定投$12,500 + 腾讯换汇≈$20,000 = ~$54,000-58,000。</strong>
+      </div>
+    </div>
+
+    <!-- ===== 2027 ===== -->
+    <div class="gantt-year">
+      <div class="gantt-year-header">
+        <span class="gantt-year-label gy-2">2027</span>
+        <span class="gantt-year-title">切换加速 · 主力建仓</span>
+        <span class="gantt-year-meta">32岁 · 腾讯三笔解禁~38万RMB · 最大建仓年</span>
+      </div>
+      <div class="month-track">
+        <div class="month-cell mc-act">1月</div>
+        <div class="month-cell mc-act">2月</div>
+        <div class="month-cell mc-money">3月💰</div>
+        <div class="month-cell mc-act">4月</div>
+        <div class="month-cell mc-act">5月</div>
+        <div class="month-cell mc-act">6月</div>
+        <div class="month-cell mc-act">7月</div>
+        <div class="month-cell mc-money">8月💰</div>
+        <div class="month-cell mc-money">9月💰</div>
+        <div class="month-cell mc-act">10月</div>
+        <div class="month-cell mc-act">11月</div>
+        <div class="month-cell mc-act">12月</div>
+      </div>
+      <div class="gantt-events">
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q1">1-2月</span>
+          <div class="gantt-content"><strong>年终奖~15万到账 + 启动月度定投：</strong><br>
+            <span style="font-size:11.5px;">
+              <strong style="color:#60a5fa">📅 每月定投方案（5标的 · 每月~$2,200-3,000 ≈ 1.7-2.3万RMB）：</strong><br>
+              · NVDA英伟达 $600-800/月 — 核心①（~25%）<br>
+              · AVGO博通 $500-650/月 — 核心②（~22%）<br>
+              · VT全球ETF $700-900/月 — 全球底仓（~30%）<br>
+              · QQQ纳指100 $200-350/月 — 科技弹性补充（月定投占比~8-12%，年度目标配比8%，碎股买入0.3-0.6股）<br>
+              · GLD黄金ETF $200-300/月 — 3%底线规则：GLD&lt;3%时每月必买·≥3%后正常DCA维持（~11%）<br>
+              · <em style="font-size:10.5px;color:#7b8db0">TSM台积电/MU美光：不做月度定投，等52周高点回撤达信号阈值（TSM≥10%/MU≥15%·v7.4方案B）时用腾讯解禁资金一次性买入</em><br>
+              <strong style="color:#fb923c;">年定投≈25-35万RMB</strong> ｜ <strong style="color:#facc15;">纪律：每月1日/15日固定买入，不看盘不犹豫</strong><br>
+              <strong style="color:#f87171;">⚠️ 降档机制：</strong><br>
+              · 月结余≥2.5万→全额定投$3,000/月（5标的全投）<br>
+              · 月结余1.5-2.5万→标准定投$2,200/月（GLD&lt;3%时削QQQ保留GLD·GLD≥3%时削GLD保留QQQ，仅四标的）<br>
+              · 月结余1.0-1.5万→最低定投$1,500/月（仅NVDA$500+AVGO$500+VT$500三标的）<br>
+              · 月结余<1.0万→暂停定投，仅买VT $1,000或不投<br>
+              <em style="font-size:10.5px;color:#7b8db0">新生儿第二年支出可能上升，降档机制确保不因现金流紧张而被迫中断投资</em>
+            </span>
+          </div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q1">3月💰</span>
+          <div class="gantt-content"><strong style="color:#facc15">腾讯解禁~11万RMB：</strong>全部卖出→换汇→注入美股 <span class="diff-tag diff-mid">需换汇</span></div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q2">4-7月</span>
+          <div class="gantt-content"><strong>月度定投持续 + 腾讯解禁资金注入：</strong><br>
+            · 解禁到账→当月一次性或分2次加仓，优先补权重偏低标的<br>
+            · <strong style="color:#60a5fa">目标配比：</strong>18%NVDA ｜ 14%AVGO ｜ 8%TSM（52周高点回撤≥10%时一次性买入·v7.4方案B） ｜ 5%MU（52周高点回撤≥15%时一次性买入·v7.4方案B） ｜ 8%QQQ（科技弹性补充） ｜ 10%GLD ｜ 27%VT ｜ 5%A股红利 ｜ 5%现金<br>
+            <span style="font-size:10.5px;color:#a78bfa">AI/半导体直接占比：18+14+8+5=<strong>45%</strong>（≤55%✅）。穿透后间接科技暴露约54-57%（QQQ 8%含NVDA~7%+AVGO~2%=0.7%，VT 27%科技~25%=6.8%）。</span><br>
+            <strong style="color:#fb923c;">每季度末检查占比，>35%强制再平衡</strong> ｜ AI/半导体总占比≤55% ｜ 探索AI副业<br>
+            <strong style="color:#34d399;">私募50万：长期持有，仅退出信号触发时赎回（见信号系统6项私募退出信号）</strong></div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q3">8月💰</span>
+          <div class="gantt-content"><strong style="color:#facc15">腾讯按年解禁~3.3万HKD：</strong>全部卖出，直接买入当月定投标的</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q3">9月💰</span>
+          <div class="gantt-content"><strong style="color:#facc15">腾讯500股解禁~26.6万HKD（≈23.4万RMB）：</strong>全部卖出→注入主力仓。此后不再保留腾讯股票。</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q4">10-12月</span>
+          <div class="gantt-content"><strong>继续月度定投</strong> ｜ 年底全面评估：实际占比 vs 目标占比、全年收益率、私募退出信号检查 ｜ 确认2028年策略<br>
+            <strong style="color:#facc15;">年终再平衡：</strong>偏离目标>5%的标的进行调整</div>
+        </div>
+      </div>
+      <div class="gantt-summary gs-2">
+        <strong>2027年资金流：</strong>腾讯38万+年终奖15万+月结余~20万+存量+配偶5万 = <strong>新增可投约78万</strong>。年末预估<strong>~251-278万</strong>（悲观~251·中性~264·乐观~278）。最关键的建仓年。<br>
+        <strong style="color:#60a5fa">定投节奏：</strong>每月1日/15日固定买入~$2,500（NVDA+AVGO+VT+QQQ+GLD），全年≈30万。TSM/MU不做月度定投，52周高点回撤达信号阈值时用腾讯解禁资金一次性买入（v7.4方案B）。<strong>纪律 > 择时。</strong><br>
+        <strong style="color:#f472b6">🏥 保险现金流：</strong>富赢今生首次返还2.7万（2027-2030每年返2.7万），部分对冲8.35万年保费→净保费~5.65万。
+      </div>
+    </div>
+
+    <!-- ===== 2028-2030 ===== -->
+    <div class="gantt-year">
+      <div class="gantt-year-header">
+        <span class="gantt-year-label gy-3">2028 - 2030</span>
+        <span class="gantt-year-title">主升浪 · 复利灌溉</span>
+        <span class="gantt-year-meta">33-35岁 · 收入巅峰 · 技术繁荣期 · 2028最后一笔腾讯解禁~14万RMB</span>
+      </div>
+      <div class="month-track">
+        <div class="month-cell" style="grid-column:span 2;background:rgba(244,114,182,0.08);color:#f472b6;">28-Q1💰解禁</div>
+        <div class="month-cell" style="grid-column:span 2;background:rgba(244,114,182,0.06);color:#a78bfa;">28-Q2 定投</div>
+        <div class="month-cell" style="grid-column:span 2;background:rgba(244,114,182,0.08);color:#f472b6;">28-Q3💰解禁</div>
+        <div class="month-cell" style="grid-column:span 2;background:rgba(167,139,250,0.08);color:#a78bfa;">2029 应用层</div>
+        <div class="month-cell" style="grid-column:span 2;background:rgba(167,139,250,0.06);color:#a78bfa;">2030 终端期</div>
+        <div class="month-cell" style="grid-column:span 2;background:rgba(52,211,153,0.08);color:#34d399;">复利显现</div>
+      </div>
+      <div class="gantt-events">
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q1">2028</span>
+          <div class="gantt-content"><strong style="color:#facc15">最后一批解禁：</strong>3月~11万RMB + 8月~3万RMB = <strong>~14万</strong>→全注入美股。此后腾讯风险彻底解除。<br>硬件继续：加仓NVDA英伟达/AVGO博通/TSM台积电/MU美光 ｜ 备选关注AMD超微/ASML阿斯麦/ARM ｜ 每年可投30-45万</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q2">2029</span>
+          <div class="gantt-content"><strong>AI应用爆发期：</strong>关注MSFT微软(Copilot)/CRM赛富时(Agentforce)/GOOG谷歌(Gemini)/META脸书(Llama)或新涌现应用龙头<br>新资金70%定投已有持仓，30%配置新赛道。备选PLTR帕兰提尔需等估值回归合理<br><span style="font-size:10.5px;color:#a78bfa">赛道扩展评估：若此时NVDA/AVGO营收增速<20%、科技capex转负、或纳指回撤>20%任一触发，从本阶段候选赛道中启动标的筛选，资金来源为腾讯解禁或成长仓减仓资金，新赛道配置上限10%。</span></div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag gmt-q3">2030</span>
+          <div class="gantt-content"><strong>AI终端期：</strong>TSLA特斯拉(机器人/FSD)/人形机器人产业链 ｜ 5年节点复利效应明显<br>黄金维持8-12%仓位</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(248,113,113,0.15);color:#f87171;">⚠️2030预案</span>
+          <div class="gantt-content"><strong style="color:#f87171">🔴 周金涛"2030年第三次机会"回调加仓预案：</strong><br>
+            <span style="font-size:11.5px;">
+              周金涛预言"1985年后出生者，第二次人生财富机会在2030年前后"。这意味着2028-2031年之间可能出现一次<strong style="color:#f87171">20-40%的大回调</strong>（类似2008年、2020年级别）。<br>
+              <strong style="color:#f1f5f9">应对预案：</strong><br>
+              · <strong style="color:#34d399">触发条件：</strong>纳指从高点回撤>25% 或 VIX>35持续一周 或 美联储紧急降息<br>
+              · <strong style="color:#34d399">行动①：</strong>安全垫保持20万不动，但将额外现金（含配偶存款、年终奖）最高50%投入加仓<br>
+              · <strong style="color:#34d399">行动②：</strong>定投金额临时翻倍（从$3,000/月→$6,000/月），持续3-6个月<br>
+              · <strong style="color:#34d399">行动③：</strong>私募如遇A股同步暴跌触发退出信号→赎回资金（7天到账）全部注入美股抄底<br>
+              · <strong style="color:#f87171">心理准备：</strong>回撤20-40%时你的账面浮亏可能达100-200万。<strong>这是恐慌但也是机会。</strong>不要卖出！反而要加仓！<br>
+              · <strong style="color:#facc15">结论：</strong>如果2030年前后出现大回调，你抓住了=财务自由提前2-3年。你错过了=按原计划走也能在35-37岁达成。<strong>不强求，但要做好准备。</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="gantt-summary gs-3">
+        <strong>三年累计新增投入105-140万</strong> + 存量资产增值。2030年底悲观<strong>479万</strong>，中性<strong>544万</strong>，乐观<strong>618万</strong>。纪律定投 > 精准择时。安全垫维持20万✅。<br>
+        <strong style="color:#f472b6">🏥 保险现金流：</strong>2028-2030富赢今生继续每年返还2.7万（共8.1万），持续对冲保费支出→净保费~5.65万/年。
+      </div>
+    </div>
+
+    <!-- ===== 2031-2032 ===== -->
+    <div class="gantt-year">
+      <div class="gantt-year-header">
+        <span class="gantt-year-label gy-4">2031 - 2032</span>
+        <span class="gantt-year-title">信号减仓 · 攻守转换</span>
+        <span class="gantt-year-meta">36-37岁 · 职场分水岭 · 可能的繁荣顶部 · 信号驱动非日历驱动 · <strong style="color:#f87171">减仓窗口2031-2037</strong></span>
+      </div>
+      <div class="month-track">
+        <div class="month-cell" style="grid-column:span 3;background:rgba(251,146,60,0.06);color:#fb923c;">监控减仓信号</div>
+        <div class="month-cell" style="grid-column:span 3;background:rgba(251,146,60,0.08);color:#fb923c;">触发→第一轮减仓30%</div>
+        <div class="month-cell" style="grid-column:span 3;background:rgba(251,146,60,0.10);color:#fb923c;">叠加→第二轮减仓30%</div>
+        <div class="month-cell" style="grid-column:span 3;background:rgba(52,211,153,0.08);color:#34d399;">转入红利+债券</div>
+      </div>
+      <div class="gantt-events">
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(251,146,60,0.15);color:#fb923c;">减仓</span>
+          <div class="gantt-content"><strong style="color:#f87171">不要精确逃顶！</strong>满足2个信号→卖30% ｜ 满足3个→再卖30% ｜ 不触发→继续持有<br>减仓后：35%TLT美国长期国债 + 10%BND美债总市场/SHY短债 + 20%红利股(中国移动/领展REIT/SCHD美股红利/长江电力/中国神华) + 5%GLD黄金ETF/IAU + 30%成长仓保留</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(251,146,60,0.15);color:#fb923c;">私募</span>
+          <div class="gantt-content">私募长期持有中，<strong style="color:#f87171">仅当触发退出信号时赎回</strong>（见信号系统6项私募退出信号）｜ 若A股牛市顶部信号明确→赎回资金投入红利+债券</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(251,146,60,0.15);color:#fb923c;">职业</span>
+          <div class="gantt-content">36-37岁互联网职场最危险。被动收入应逼近30万/年目标（857万×3.5%）。副业/自由职业能力应已成型。</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(244,114,182,0.15);color:#f472b6;">🏥保险</span>
+          <div class="gantt-content"><strong style="color:#f472b6">2032年保费大幅减负：</strong>富赢今生（4.25万/年）+ 养老年金险（1.2万/年）缴费到期→<strong style="color:#34d399">年保费从8.35万降至~2.9万，释放5.45万/年投资弹药</strong><br>
+          <span style="font-size:10.5px;color:#7b8db0">⚠️ 若离职：公司福利保险失效，但平安福寿险61万+意外50万+重疾60万可兜底。e生保续保不受影响。</span></div>
+        </div>
+      </div>
+      <div class="gantt-summary gs-4">
+        <strong>周金涛：</strong>"繁荣的顶点，所有人都觉得繁荣会永远持续。"<strong>卖早了比卖晚了好，你有10年盈利做安全垫。</strong>
+      </div>
+    </div>
+
+    <!-- ===== 2033-2035 ===== -->
+    <div class="gantt-year">
+      <div class="gantt-year-header">
+        <span class="gantt-year-label gy-5">2033 - 2035</span>
+        <span class="gantt-year-title">现金流闭环 · 选择权自由</span>
+        <span class="gantt-year-meta">38-40岁 · 终局构建 · 被动收入独立覆盖30万/年支出（857万门槛）</span>
+      </div>
+      <div class="month-track">
+        <div class="month-cell" style="grid-column:span 4;background:rgba(52,211,153,0.06);color:#34d399;">红利收息体系</div>
+        <div class="month-cell" style="grid-column:span 4;background:rgba(52,211,153,0.08);color:#34d399;">成长仓留种</div>
+        <div class="month-cell" style="grid-column:span 4;background:rgba(52,211,153,0.10);color:#34d399;">选择权自由</div>
+      </div>
+      <div class="gantt-events">
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(52,211,153,0.15);color:#34d399;">收息</span>
+          <div class="gantt-content">红利年分红<strong class="ok">15-25万</strong> + 债券利息<strong class="ok">8-15万</strong> = 被动收入<strong class="ok">25-40万/年 ≥ 30万基准支出 ✅</strong>（独立覆盖，不依赖配偶收入）<br><span style="font-size:11px;color:#546380">配偶收入10.8万为额外盈余，可全部再投资或提升生活品质</span></div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(52,211,153,0.15);color:#34d399;">成长</span>
+          <div class="gantt-content">保留20-30%成长资产（NVDA英伟达/VT全球ETF/新AI龙头）→留给下一轮康波（2040年代）的种子</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(52,211,153,0.15);color:#34d399;">生活</span>
+          <div class="gantt-content">孩子7-9岁 ｜ 可改善住房 ｜ 被动收入20%用于旅行 ｜ <strong>"因为想做而工作" vs "不得不工作"</strong></div>
+        </div>
+      </div>
+      <div class="gantt-summary gs-5">
+        <strong>第一二幕终极原则：</strong>财务自由=拥有选择权。40岁的你，<strong>每一天都是自愿的。</strong>中性情景~949万。<strong style="color:#34d399">资产被动收入独立覆盖30万/年支出（857万门槛），配偶收入为额外安全边际。</strong>
+      </div>
+    </div>
+
+    <!-- ===== 第三幕分隔 ===== -->
+    <div class="act-divider" style="background:rgba(251,146,60,0.08);">
+      <strong style="font-size:16px;color:#fb923c">🎬 第三幕：防御过冬（41-50岁 · 2036-2045）</strong>
+      <span style="font-size:11px;color:#7b8db0;margin-left:8px;">康波衰退→萧条 · 保住财富 · 小民回测：同期520万守住并增至920万</span>
+    </div>
+
+    <!-- ===== 2036-2040 ===== -->
+    <div class="gantt-year">
+      <div class="gantt-year-header">
+        <span class="gantt-year-label gy-6">2036 - 2040</span>
+        <span class="gantt-year-title">衰退过渡 · 现金为王</span>
+        <span class="gantt-year-meta">41-45岁 · 康波衰退期 · 教育支出高峰（孩子10-14岁） · AI泡沫可能已破</span>
+      </div>
+      <div class="month-track">
+        <div class="month-cell" style="grid-column:span 3;background:rgba(248,113,113,0.06);color:#f87171;">衰退初期</div>
+        <div class="month-cell" style="grid-column:span 3;background:rgba(248,113,113,0.08);color:#f87171;">债券收息</div>
+        <div class="month-cell" style="grid-column:span 3;background:rgba(250,204,21,0.08);color:#facc15;">黄金再配</div>
+        <div class="month-cell" style="grid-column:span 3;background:rgba(52,211,153,0.06);color:#34d399;">红利收息</div>
+      </div>
+      <div class="gantt-events">
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(248,113,113,0.15);color:#f87171;">核心</span>
+          <div class="gantt-content"><strong style="color:#f87171">资产配置（防御模式）：</strong>35%TLT美国长期国债/BND美债 + 25%红利股(SCHD/中移动/长电/神华/领展) + 15%黄金(GLD/IAU) + 15%成长仓保留(QQQ/VT/AI龙头) + 10%现金<br>
+          <strong>关键：</strong>这五年不追求增长，年化4-6%就算成功。同期市场可能暴跌40-60%（类似2001/2008），你的组合因为第二幕已减仓而安然无恙。</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(248,113,113,0.15);color:#f87171;">支出</span>
+          <div class="gantt-content"><strong>家庭支出高峰：</strong>孩子教育费~8-15万/年 + 住房(物业水电)~2万 + 父母养老~3-8万/年 + 生活~12-18万 + 弹性3-5万。年总支出预计35-48万。<br>被动收入（红利+债券利息）25-40万 ≥ 30万基准支出 ✅ + 配偶收入10.8万覆盖教育高峰超出部分→<strong style="color:#34d399">总收入36-51万 覆盖支出✅</strong>。<strong style="color:#facc15">若失业：被动收入≥30万基准+安全垫可撑教育高峰差额。</strong></div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(248,113,113,0.15);color:#f87171;">关注</span>
+          <div class="gantt-content"><strong>从2038年起开始研究第七波康波：</strong>量子计算？可控核聚变？合成生物学？脑机接口？太空经济？<br>不需要现在做决定，但要开始<strong>学习和关注</strong>，为51岁的第四幕做知识储备。</div>
+        </div>
+      </div>
+      <div class="gantt-summary gs-6">
+        <strong>小民第三幕验证：</strong>2001-2010十年间资产从520万增至920万（年化4.6%），但同期全仓科技的投资者从680万跌到150万。<strong style="color:#f87171">防御就是胜利。</strong>
+      </div>
+    </div>
+
+    <!-- ===== 2041-2045 ===== -->
+    <div class="gantt-year">
+      <div class="gantt-year-header">
+        <span class="gantt-year-label gy-6">2041 - 2045</span>
+        <span class="gantt-year-title">萧条深渊 · 耐心等待</span>
+        <span class="gantt-year-meta">46-50岁 · 康波萧条期 · 孩子15-19岁（高中/大学） · 资产保全优先</span>
+      </div>
+      <div class="month-track">
+        <div class="month-cell" style="grid-column:span 4;background:rgba(248,113,113,0.06);color:#f87171;">萧条期底部</div>
+        <div class="month-cell" style="grid-column:span 4;background:rgba(250,204,21,0.08);color:#facc15;">黄金高位减持</div>
+        <div class="month-cell" style="grid-column:span 4;background:rgba(96,165,250,0.08);color:#60a5fa;">准备再播种</div>
+      </div>
+      <div class="gantt-events">
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(248,113,113,0.15);color:#f87171;">萧条</span>
+          <div class="gantt-content"><strong>萧条期特征：</strong>市场情绪极度悲观，"AI已死"等论调盛行。大量科技公司倒闭或被并购。但这正是萧条尾声的信号。<br>
+          <strong>操作：</strong>维持防御配置不变。<strong style="color:#facc15">黄金可能在萧条中后期见顶</strong>（类似2011年$1,900高点），此时卖出黄金50-70%→积累现金。</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(250,204,21,0.15);color:#facc15;">准备</span>
+          <div class="gantt-content"><strong>2044-2045年：</strong>如果看到萧条尾声信号（央行激进降息、VIX长期>35、"再也不投资"成主流），开始将现金+黄金减持部分转入第七波康波种子仓。<br>
+          <strong style="color:#f472b6">小民验证：2011年抄底Apple/Google/Amazon，正是在萧条最深处。</strong></div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(244,114,182,0.15);color:#f472b6;">🏥保险</span>
+          <div class="gantt-content"><strong style="color:#f472b6">2049年平安福缴清（30年期满）：</strong>年省1.31万→年保费从~2.9万降至~1.6万（仅e生保+个人养老金）。<br>
+          <span style="font-size:10.5px;color:#7b8db0">注：e生保保费随父母年龄上升（70-80岁时每人保费可能达4,000-6,000/年），实际保费降幅可能被e生保涨费部分抵消。</span></div>
+        </div>
+      </div>
+      <div class="gantt-summary gs-6">
+        <strong>周金涛遗训：</strong>"萧条期人人恐惧，此时应积累勇气和弹药。" 黄金高位变现+债券到期回收→为第四幕积攒弹药。
+      </div>
+    </div>
+
+    <!-- ===== 第四幕分隔 ===== -->
+    <div class="act-divider" style="background:rgba(244,114,182,0.08);">
+      <strong style="font-size:16px;color:#f472b6">🎬 第四幕：再播种（51-55岁 · 2046-2050）</strong>
+      <span style="font-size:11px;color:#7b8db0;margin-left:8px;">萧条尾声→第七波康波 · 二次进攻 · 小民回测：920万→1,580万</span>
+    </div>
+
+    <!-- ===== 2046-2050 ===== -->
+    <div class="gantt-year">
+      <div class="gantt-year-header">
+        <span class="gantt-year-label gy-7">2046 - 2050</span>
+        <span class="gantt-year-title">第七波康波 · 二次进攻</span>
+        <span class="gantt-year-meta">51-55岁 · 孩子20-24岁独立 · 新技术主线确立 · 人生第二次发财机会</span>
+      </div>
+      <div class="month-track">
+        <div class="month-cell" style="grid-column:span 4;background:rgba(244,114,182,0.06);color:#f472b6;">新技术种子仓</div>
+        <div class="month-cell" style="grid-column:span 4;background:rgba(244,114,182,0.08);color:#f472b6;">逐步加仓</div>
+        <div class="month-cell" style="grid-column:span 4;background:rgba(52,211,153,0.08);color:#34d399;">复利启动</div>
+      </div>
+      <div class="gantt-events">
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(244,114,182,0.15);color:#f472b6;">再播种</span>
+          <div class="gantt-content"><strong>资产配置（再进攻模式）：</strong>30%第七波康波权益（新技术龙头）+ 30%全球ETF(VT等值) + 20%红利+债券 + 10%黄金 + 10%现金<br>
+          <strong>第七波康波候选主线：</strong>量子计算 / 可控核聚变 / 合成生物学 / 脑机接口 / 太空经济 / AGI衍生产业<br>
+          <strong style="color:#f472b6">需要勇气！</strong>此时市场可能仍在萧条情绪中，就像2011年抄底看起来很蠢但10年后证明是天才。</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(244,114,182,0.15);color:#f472b6;">生活</span>
+          <div class="gantt-content">孩子大学毕业/独立→家庭支出骤降至20-30万/年。被动收入已能轻松覆盖。<br>
+          <strong>此时的你：</strong>55岁，资产预计1,400-2,100万，年被动收入60-100万。工作完全是选择而非必须。</div>
+        </div>
+      </div>
+      <div class="gantt-summary gs-7">
+        <strong>小民第四幕验证：</strong>2011-2015年从920万增至1,580万（年化11.4%）。第四幕贡献了终局总资产的35%以上。<strong>这是你这辈子第二次"人生发财靠康波"。</strong>
+      </div>
+    </div>
+
+    <!-- ===== 第五幕分隔 ===== -->
+    <div class="act-divider" style="background:rgba(52,211,153,0.08);">
+      <strong style="font-size:16px;color:#34d399">🎬 第五幕：传承守成（56-70岁 · 2051-2065）</strong>
+      <span style="font-size:11px;color:#7b8db0;margin-left:8px;">新康波繁荣 · 极低风险 · 传承规划 · 小民回测：1,580万→2,850万</span>
+    </div>
+
+    <!-- ===== 2051-2065 ===== -->
+    <div class="gantt-year">
+      <div class="gantt-year-header">
+        <span class="gantt-year-label gy-8">2051 - 2065</span>
+        <span class="gantt-year-title">传承 · 安享 · 人生圆满</span>
+        <span class="gantt-year-meta">56-70岁 · 第七波康波繁荣期 · 资产传承 · 享受人生</span>
+      </div>
+      <div class="month-track">
+        <div class="month-cell" style="grid-column:span 4;background:rgba(52,211,153,0.06);color:#34d399;">收息+传承规划</div>
+        <div class="month-cell" style="grid-column:span 4;background:rgba(52,211,153,0.08);color:#34d399;">逐步降低权益</div>
+        <div class="month-cell" style="grid-column:span 4;background:rgba(52,211,153,0.10);color:#34d399;">人生圆满</div>
+      </div>
+      <div class="gantt-events">
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(52,211,153,0.15);color:#34d399;">配置</span>
+          <div class="gantt-content"><strong>资产配置（极低风险）：</strong>40%债券/固收 + 30%红利 + 15%第七波成长仓（留给下一代） + 10%黄金 + 5%现金<br>
+          每5年将权益仓位降低5%，逐步从成长转向纯收息。<strong>60岁后权益不超过20%。</strong></div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(52,211,153,0.15);color:#34d399;">传承</span>
+          <div class="gantt-content"><strong>资产传承规划：</strong>① 建立家族信托或保险信托（60岁前完成）② 教育基金留给孙辈 ③ 成长仓留给孩子（让下一代在第七波康波中受益）<br>
+          <strong style="color:#34d399">你的孩子30岁时（2056年），正好处于第七波康波繁荣期——就像你31岁处于第六波一样。</strong></div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(52,211,153,0.15);color:#34d399;">生活</span>
+          <div class="gantt-content"><strong>人生目标：</strong>年被动收入120-200万 → 旅行、兴趣、家庭、公益。<br>
+          <strong>"人生发财靠康波，守财靠纪律与人性。"</strong> 你这辈子抓住了两次康波，做到了大多数人做不到的事。</div>
+        </div>
+        <div class="gantt-row">
+          <span class="gantt-month-tag" style="background:rgba(244,114,182,0.15);color:#f472b6;">🏥保险</span>
+          <div class="gantt-content"><strong style="color:#f472b6">保险返还与养老金时间线：</strong><br>
+          · <strong style="color:#facc15">2052年（57岁）：</strong>富赢今生一次性返还本金42万 — <strong>操作指引：</strong>50%（~21万）注入低风险投资组合（红利+债券）增厚被动收入 + 50%（~21万）保留为晚年应急安全垫（独立于投资组合）<br>
+          · <strong style="color:#60a5fa">2053年（58岁）：</strong>国家个人养老金开始返还（首年6.44万，逐年递减）<br>
+          · <strong style="color:#34d399">2055年（60岁）：</strong>三重养老现金流同时开启 → 养老年金险1,215.92元/月（终身）+ 父亲购保9,765元/年（终身）+ 国家养老金~2.4万/年<br>
+          · <strong>合计年入~4.8万</strong>，叠加投资被动收入120-200万，形成多层安全网</div>
+        </div>
+      </div>
+      <div class="gantt-summary gs-8">
+        <strong>小民第五幕验证：</strong>2016-2025从1,580万增至2,850万（年化6.1%，低风险配置）。<strong>五幕总结：50万→2,850万，35年年化12.5%。核心不是年化多高，而是每一幕都做对了该做的事。</strong>
+      </div>
+    </div>
+
+  </div><!-- timeline end -->
+
+  <!-- ========== 资产测算 ========== -->
+  <div class="calc-section" id="sec-calc">
+    <h3>📐 全生命周期资产增长测算（含配偶收入 · 统一公式End=Start×(1+r)+New×(1+r/2) · 三种情景 · 五幕覆盖31→55岁）</h3>
+    <div class="table-wrap">
+    <table class="calc-table">
+      <thead>
+        <tr>
+          <th>年份</th>
+          <th>年龄</th>
+          <th>幕</th>
+          <th>当年新增投入<br>(万RMB)</th>
+          <th>累计投入</th>
+          <th><span class="scenario-tag sc-bear">悲观</span><br>年化8%</th>
+          <th><span class="scenario-tag sc-base">中性</span><br>年化12%</th>
+          <th><span class="scenario-tag sc-bull">乐观</span><br>年化16%</th>
+          <th>备注</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2026</td><td>31</td><td style="color:#60a5fa">I</td>
+          <td>12+20+27(腾讯)+5(配偶结余)</td>
+          <td>148</td>
+          <td>157</td><td>162</td><td>167</td>
+          <td>播种年·安全垫加固；初始84万(含53私募+10.6美股+20安全垫)·配偶年结余~5万纳入</td>
+        </tr>
+        <tr>
+          <td>2027</td><td>32</td><td style="color:#60a5fa">I</td>
+          <td>15+20+38(腾讯)+5(配偶)</td>
+          <td>226</td>
+          <td>251</td><td>264</td><td>278</td>
+          <td>最大建仓年·腾讯三笔解禁·配偶收入补充</td>
+        </tr>
+        <tr>
+          <td>2028</td><td>33</td><td style="color:#60a5fa">I</td>
+          <td>35+14(腾讯)+5(配偶)</td>
+          <td>280</td>
+          <td>327</td><td>353</td><td>381</td>
+          <td>最后腾讯解禁·复利起步</td>
+        </tr>
+        <tr>
+          <td>2029</td><td>34</td><td style="color:#60a5fa">I</td>
+          <td>40+5(配偶)</td>
+          <td>325</td>
+          <td>400</td><td>443</td><td>491</td>
+          <td>AI应用爆发期</td>
+        </tr>
+        <tr style="background:rgba(96,165,250,0.04);">
+          <td><strong>2030</strong></td><td><strong>35</strong></td><td style="color:#60a5fa"><strong>I</strong></td>
+          <td>40+5(配偶)</td>
+          <td><strong>370</strong></td>
+          <td><strong>479</strong></td><td><strong>544</strong></td><td><strong>618</strong></td>
+          <td><strong>第一幕终·五年节点·若触发2030回调预案=加速建仓</strong></td>
+        </tr>
+        <tr>
+          <td>2031</td><td>36</td><td style="color:#a78bfa">II</td>
+          <td>35+5(配偶)</td>
+          <td>410</td>
+          <td>544</td><td>626</td><td>722</td>
+          <td>可能触发减仓信号·第二幕年化保守估7-8%</td>
+        </tr>
+        <tr>
+          <td>2032</td><td>37</td><td style="color:#a78bfa">II</td>
+          <td>30+5(配偶)</td>
+          <td>445</td>
+          <td>607</td><td>709</td><td>831</td>
+          <td>攻守转换期·红利+债券年化降至7-8%·<strong style="color:#f472b6">保费减负年：</strong>富赢今生+养老年金缴清→年省5.45万释放为投资弹药</td>
+        </tr>
+        <tr>
+          <td>2033</td><td>38</td><td style="color:#a78bfa">II</td>
+          <td>25+5+5.45(保费释放)(配偶)</td>
+          <td>475</td>
+          <td>668</td><td>793</td><td>946</td>
+          <td>被动收入体系产出·⚠️可能被裁节点·保费释放5.45万/年转入投资（若被裁则对冲收入下降）</td>
+        </tr>
+        <tr>
+          <td>2034</td><td>39</td><td style="color:#a78bfa">II</td>
+          <td>10+5(配偶)</td>
+          <td>490</td>
+          <td>717</td><td>868</td><td>1,057</td>
+          <td>若已被裁：仅配偶+被动收入·复利主导</td>
+        </tr>
+        <tr style="background:rgba(167,139,250,0.04);">
+          <td><strong>2035</strong></td><td><strong>40</strong></td><td style="color:#a78bfa"><strong>II</strong></td>
+          <td>10+5(配偶)</td>
+          <td><strong>505</strong></td>
+          <td><strong style="color:#f87171;">768</strong></td>
+          <td><strong style="color:#facc15;">949</strong></td>
+          <td><strong style="color:#34d399;">1,179</strong></td>
+          <td><strong>第二幕终·选择权自由·第二幕中性年化7.5%</strong></td>
+        </tr>
+        <tr style="background:rgba(251,146,60,0.03);">
+          <td>2036</td><td>41</td><td style="color:#fb923c">III</td>
+          <td>10</td>
+          <td>515</td>
+          <td>809</td><td>1,007</td><td>1,260</td>
+          <td>进入防御模式·年化降至4-6%</td>
+        </tr>
+        <tr style="background:rgba(251,146,60,0.03);">
+          <td>2038</td><td>43</td><td style="color:#fb923c">III</td>
+          <td>10×2</td>
+          <td>535</td>
+          <td>896</td><td>1,132</td><td>1,437</td>
+          <td>防御中·研究第七波康波</td>
+        </tr>
+        <tr style="background:rgba(251,146,60,0.03);">
+          <td><strong>2040</strong></td><td><strong>45</strong></td><td style="color:#fb923c"><strong>III</strong></td>
+          <td>5×2</td>
+          <td><strong>545</strong></td>
+          <td><strong>980</strong></td><td><strong>1,259</strong></td><td><strong>1,625</strong></td>
+          <td><strong>教育支出高峰·新增投入减少</strong></td>
+        </tr>
+        <tr style="background:rgba(251,146,60,0.03);">
+          <td><strong>2045</strong></td><td><strong>50</strong></td><td style="color:#fb923c"><strong>III</strong></td>
+          <td>5×5</td>
+          <td><strong>570</strong></td>
+          <td><strong>1,220</strong></td><td><strong>1,636</strong></td><td><strong>2,204</strong></td>
+          <td><strong>第三幕终·萧条尾声·准备弹药</strong></td>
+        </tr>
+        <tr style="background:rgba(244,114,182,0.04);">
+          <td><strong>2050</strong></td><td><strong>55</strong></td><td style="color:#f472b6"><strong>IV</strong></td>
+          <td>10×5</td>
+          <td><strong>620</strong></td>
+          <td><strong style="color:#f87171;">1,854</strong></td>
+          <td><strong style="color:#facc15;">2,700</strong></td>
+          <td><strong style="color:#34d399;">3,951</strong></td>
+          <td><strong>第四幕终·再播种成功</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- ========== 家庭支出规划 ========== -->
+  <div class="expense-section" id="sec-expense">
+    <h3>💸 家庭支出规划（五幕全覆盖 · 量入为出 · 确保被动收入>支出）</h3>
+    <div class="table-wrap">
+    <table class="calc-table" style="border-color:rgba(244,114,182,0.15);">
+      <thead>
+        <tr>
+          <th>阶段</th>
+          <th>年龄</th>
+          <th>年支出（万）</th>
+          <th>主要支出项</th>
+          <th>被动收入目标</th>
+          <th>缺口覆盖</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:#60a5fa"><strong>第一幕</strong></td>
+          <td>31-35</td>
+          <td>30</td>
+          <td>住房(物业水电)1.2 + 新生儿3-5 + <strong style="color:#f472b6">保险8.35</strong>（含储蓄型5.45·2032后停缴→降至2.9） + 车1.8 + 生活10-15 + 弹性消费4-8<br><span style="font-size:10.5px;color:#7b8db0">注：富赢今生2027-2030每年返2.7万，对冲后净保费~5.65万</span></td>
+          <td>5-15万（逐步建立）</td>
+          <td>工资50万+配偶10.8万 · 结余大量投入</td>
+        </tr>
+        <tr>
+          <td style="color:#a78bfa"><strong>第二幕</strong></td>
+          <td>36-40</td>
+          <td>30-35</td>
+          <td>住房1.2 + 教育5-10 + <strong style="color:#34d399">保险2.9</strong>（2032后仅平安福1.31+e生保0.39+养老金1.2） + 父母3-5 + 车1.8 + 生活10-14 + 弹性3-5<br><span style="font-size:10.5px;color:#7b8db0">注：富赢今生2031-2051每年返0.6万，进一步对冲</span></td>
+          <td>≥30万（独立覆盖支出）</td>
+          <td>被动收入≥30万=财务自由 · 配偶收入+工资为纯盈余</td>
+        </tr>
+        <tr>
+          <td style="color:#fb923c"><strong>第三幕</strong></td>
+          <td>41-50</td>
+          <td>35-48</td>
+          <td>教育8-15（初高中国际校?） + 住房改善/物业2 + 父母医疗5-8 + <strong style="color:#34d399">保险2.9</strong>（平安福+e生保+养老金；e生保保费随年龄上升） + 车2 + 生活12-18 + 弹性3-5</td>
+          <td>≥30万（独立覆盖基准支出）</td>
+          <td>被动收入≥30万基准 · 教育高峰超出部分由配偶收入+副业覆盖</td>
+        </tr>
+        <tr>
+          <td style="color:#f472b6"><strong>第四幕</strong></td>
+          <td>51-55</td>
+          <td>25-35</td>
+          <td>教育支出减少（孩子独立）+ 父母养老5-10 + <strong style="color:#34d399">保险1.6</strong>（2049平安福缴清→仅e生保+养老金） + 生活15-20 + 旅行5<br><span style="font-size:10.5px;color:#7b8db0">注：2052年富赢今生一次性返42万；2053-2056年养老金陆续到账</span></td>
+          <td>60-100万</td>
+          <td><span style="color:#34d399">被动收入远覆盖</span></td>
+        </tr>
+        <tr>
+          <td style="color:#34d399"><strong>第五幕</strong></td>
+          <td>56-70</td>
+          <td>20-30</td>
+          <td>医疗保健5-10 + 生活10-15 + 旅行/公益5<br><span style="font-size:10.5px;color:#7b8db0">2055年起三重养老现金流~4.8万/年（养老年金1.46万+父亲购保0.98万+国家养老金~2.4万）</span></td>
+          <td>120-200万</td>
+          <td><span style="color:#34d399">完全自由·盈余传承·保险现金流叠加</span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:#7b8db0;line-height:1.8;">
+      <strong style="color:#f472b6">核心原则：</strong>
+      ① <strong style="color:#f1f5f9">第一幕优先积累而非消费</strong>——31-35岁是最佳投入期，每多投1万=65岁多100万（年化12%复利40年）<br>
+      ② <strong style="color:#f1f5f9">第二幕被动收入≥30万/年</strong>是"选择权自由"的定义——不依赖任何人的劳动收入<br>
+      ③ <strong style="color:#f87171">第三幕教育支出是最大不确定性</strong>——国际学校vs公立差距巨大（5万vs15万/年），教育高峰超出30万基准的部分由配偶收入+副业覆盖<br>
+      ④ <strong style="color:#34d399">55岁后支出骤降</strong>——孩子独立，被动收入远超支出，进入"花不完"阶段<br>
+      ⑤ <strong style="color:#34d399">无房贷使年支出可控在30万（含弹性消费），配偶收入10.8万/年是额外安全边际。</strong>
+    </div>
+  </div>
+
+  <!-- ========== 人力资本 ========== -->
+  <div class="human-cap" id="sec-human">
+    <h3>🧠 人力资本投资（被严重低估的最大资产）</h3>
+    <div class="hc-grid">
+      <div class="hc-card">
+        <h4>为什么这是最重要的？</h4>
+        <p>你未来10年的工资总收入约 <strong style="color:#f1f5f9;">400-500万</strong>（含配偶10年~108万合计<strong style="color:#34d399">508-608万</strong>）。这比你当前82万金融资产大6-7倍。如果35岁被优化，收入骤降，所有投资计划都会被打乱。维护人力资本 = 保护你最大的资产。<br><strong style="color:#34d399">配偶收入10.8万/年是重要安全网，即便你被裁仍有兜底。</strong></p>
+      </div>
+      <div class="hc-card">
+        <h4>31-33岁：深耕主业 + 探索副线</h4>
+        <p>在腾讯内保持竞争力，争取升级/调岗到AI相关业务线。同时每周花5-8小时探索个人IP/副业方向（AI工具教学、投资内容、技术咨询等）。</p>
+      </div>
+      <div class="hc-card">
+        <h4>34-35岁：副业变现验证</h4>
+        <p>副业目标：月入 <strong style="color:#34d399;">3000-8000元</strong>。不求大富，但求证明"我可以脱离平台赚钱"。这个心理安全感比任何投资收益都重要。</p>
+      </div>
+      <div class="hc-card">
+        <h4>36-40岁：双轨并行</h4>
+        <p>如果还在大厂 → 享受高薪继续积累。如果被优化 → 副业已可覆盖基本生活 + 被动收入托底。<strong style="color:#facc15;">两条腿走路，永远不要只有一个收入来源。</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 保险 ========== -->
+  <div class="insurance-section" id="sec-insurance">
+    <h3>🏥 保险防护网（实际持有 · 2026年2月更新）</h3>
+
+    <!-- ===== A. 保障类保险汇总（按被保险人） ===== -->
+    <h4>A. 保障类保险汇总（寿险+意外+重疾+医疗）</h4>
+    <div class="table-wrap">
+    <table class="ins-table">
+      <thead>
+        <tr><th>被保险人</th><th>寿险（万）</th><th>意外险（万）</th><th>重疾（万）</th><th>轻症（万）</th><th>医疗（万）</th><th>来源</th><th>年缴保费</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="3"><strong style="color:#60a5fa">本人</strong></td>
+          <td>40</td><td>40</td><td>10（+20报销）</td><td>2</td><td>10</td>
+          <td>公司福利</td><td class="ins-ok">0（免费）</td><td class="ins-warn">⚠️ 在职有效，离职即失效</td>
+        </tr>
+        <tr>
+          <td>61</td><td>50</td><td>60（含轻症豁免）</td><td>—</td><td>—</td>
+          <td>平安福（2019.3.18起）</td><td>13,128.08</td><td>缴费期30年→2049.3止</td>
+        </tr>
+        <tr>
+          <td>—</td><td>—</td><td>—</td><td>—</td><td>400（1万免赔）</td>
+          <td>e生保百万医疗</td><td>332.35</td><td>每年续保</td>
+        </tr>
+        <tr class="ins-subtotal">
+          <td><strong>本人合计</strong></td>
+          <td><strong>101</strong></td><td><strong>90</strong></td><td><strong>70+20报销</strong></td><td><strong>2</strong></td><td><strong>410</strong></td>
+          <td>—</td><td><strong>13,460.43</strong></td><td class="ins-ok">✅ 保障充足</td>
+        </tr>
+        <tr>
+          <td rowspan="2"><strong style="color:#f472b6">老婆</strong></td>
+          <td>20</td><td>20</td><td>10</td><td>2</td><td>—</td>
+          <td>公司积分购买</td><td class="ins-ok">0（积分）</td><td class="ins-warn">⚠️ 依赖在职状态</td>
+        </tr>
+        <tr>
+          <td>—</td><td>—</td><td>—</td><td>—</td><td>400（1万免赔）</td>
+          <td>e生保百万医疗</td><td>332.35</td><td>每年续保</td>
+        </tr>
+        <tr class="ins-subtotal">
+          <td><strong>老婆合计</strong></td>
+          <td><strong class="ins-warn">20 ⚠️</strong></td><td><strong class="ins-warn">20 ⚠️</strong></td><td><strong class="ins-warn">10 ⚠️</strong></td><td><strong>2</strong></td><td><strong>400</strong></td>
+          <td>—</td><td><strong>332.35</strong></td><td class="ins-warn">⚠️ 保障严重不足（见分析）</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fb923c">父亲</strong></td>
+          <td>—</td><td>—</td><td>—</td><td>—</td><td>400（1万免赔）</td>
+          <td>e生保百万医疗</td><td>1,847.90</td><td>仅有大病医疗保障</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fb923c">母亲</strong></td>
+          <td>—</td><td>—</td><td>—</td><td>—</td><td>400（1万免赔）</td>
+          <td>e生保百万医疗</td><td>1,385.50</td><td>仅有大病医疗保障</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <!-- ===== B. 储蓄/年金类保险 ===== -->
+    <h4>B. 储蓄/年金类保险（现金流规划）</h4>
+    <div class="table-wrap">
+    <table class="ins-table">
+      <thead>
+        <tr><th>产品</th><th>开始日期</th><th>缴费方式</th><th>缴费期</th><th>总投入</th><th>返还计划</th><th>当前年缴</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:#a78bfa">富赢今生</strong></td>
+          <td>2022.5.22</td><td>3,538元/月</td><td>10年→2032.5止</td><td>~42.46万</td>
+          <td>2027-2030每年返2.7万（共10.8万）<br>2031-2051每年返0.6万（共12.6万）<br>2052年一次性返本金42万<br><strong class="ins-highlight">总返还~65.4万</strong></td>
+          <td>42,456</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#a78bfa">养老年金险</strong></td>
+          <td>2022.11.14</td><td>1,000元/月</td><td>10年→2032.11止</td><td>12万</td>
+          <td>60岁（2055年）起每月领1,215.92元<br><strong class="ins-highlight">年领~14,591元·终身</strong></td>
+          <td>12,000</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#a78bfa">父亲购保（童年）</strong></td>
+          <td>小时候</td><td>已缴清</td><td>—</td><td>—</td>
+          <td>2055年起每年领9,765元<br><strong class="ins-highlight">终身领取至去世</strong></td>
+          <td class="ins-ok">0</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#a78bfa">国家个人养老金</strong></td>
+          <td>每年</td><td>12,000元/年</td><td>持续缴纳</td><td>已缴数年</td>
+          <td>2053年返64,392 · 2054年返27,792<br>2055年返24,108 · 2056年返21,012<br>后续逐年递减</td>
+          <td>12,000</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <!-- ===== C. 年度保费现金流 ===== -->
+    <h4>C. 年度保费支出时间表</h4>
+    <div class="table-wrap">
+    <table class="ins-table">
+      <thead>
+        <tr><th>项目</th><th>年缴金额</th><th>缴费截止</th><th>2026-2032<br>（当前阶段）</th><th>2033-2049<br>（缴费期后段）</th><th>2050+<br>（晚年）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>平安福</td><td>13,128</td><td>2049.3</td><td>✅</td><td>✅</td><td>—</td></tr>
+        <tr><td>富赢今生</td><td>42,456</td><td>2032.5</td><td>✅</td><td>—</td><td>—</td></tr>
+        <tr><td>养老年金险</td><td>12,000</td><td>2032.11</td><td>✅</td><td>—</td><td>—</td></tr>
+        <tr><td>个人养老金</td><td>12,000</td><td>持续</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>e生保（全家4人）</td><td>3,898</td><td>每年续保</td><td>✅</td><td>✅（保费随年龄↑）</td><td>✅（保费大幅↑）</td></tr>
+        <tr class="ins-subtotal">
+          <td><strong>年度总保费</strong></td>
+          <td colspan="2">—</td>
+          <td><strong class="ins-warn">~83,482<br>(6,957/月)</strong></td>
+          <td><strong class="ins-info">~29,026+<br>(2,419/月)</strong></td>
+          <td><strong class="ins-ok">~15,898+<br>(1,325/月)</strong></td>
+        </tr>
+        <tr class="ins-subtotal">
+          <td><strong>占年收入比</strong></td>
+          <td colspan="2">—</td>
+          <td><strong class="ins-warn">~13.7%<br>（60.8万）</strong></td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="ins-note">
+      <strong class="ins-warn">⚠️ 保费压力集中在2026-2032：</strong>年缴~8.35万（月均~6,957），占家庭总收入13.7%（高于通常建议的5-10%）。<br>
+      <strong class="ins-ok">✅ 2032年后显著减负：</strong>富赢今生（4.25万）+ 养老年金险（1.2万）= 5.45万保费到期停缴，年保费降至~2.9万。<br>
+      <strong class="ins-info">💡 对投资现金流的影响：</strong>月结余1.5-2.5万中有~6,957被保险占用，实际可投资金约8,000-18,000元/月。这已反映在甘特图降档机制中（月结余<1万→暂停定投）。
+    </div>
+
+    <!-- ===== D. 退休后现金流时间表 ===== -->
+    <h4>D. 退休后保险/养老现金流时间表</h4>
+    <div class="table-wrap">
+    <table class="ins-table">
+      <thead>
+        <tr><th>年份</th><th>年龄</th><th>幕</th><th>富赢今生</th><th>国家养老金</th><th>父亲购保</th><th>养老年金险</th><th>年合计</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>2027</td><td>32</td><td style="color:#60a5fa">I</td><td class="ins-highlight">+27,000</td><td>—</td><td>—</td><td>—</td><td><strong>27,000</strong></td></tr>
+        <tr><td>2028</td><td>33</td><td style="color:#60a5fa">I</td><td class="ins-highlight">+27,000</td><td>—</td><td>—</td><td>—</td><td><strong>27,000</strong></td></tr>
+        <tr><td>2029</td><td>34</td><td style="color:#60a5fa">I</td><td class="ins-highlight">+27,000</td><td>—</td><td>—</td><td>—</td><td><strong>27,000</strong></td></tr>
+        <tr><td>2030</td><td>35</td><td style="color:#60a5fa">I</td><td class="ins-highlight">+27,000</td><td>—</td><td>—</td><td>—</td><td><strong>27,000</strong></td></tr>
+        <tr><td>2031-2051</td><td>36-56</td><td style="color:#a78bfa">II-V</td><td>+6,000/年</td><td>—</td><td>—</td><td>—</td><td><strong>6,000/年</strong></td></tr>
+        <tr style="background:rgba(250,204,21,0.04)"><td><strong>2052</strong></td><td>57</td><td style="color:#34d399">V</td><td class="ins-highlight"><strong>+420,000（返本）</strong></td><td>—</td><td>—</td><td>—</td><td><strong class="ins-highlight">420,000</strong></td></tr>
+        <tr><td>2053</td><td>58</td><td style="color:#34d399">V</td><td>—</td><td class="ins-info">+64,392</td><td>—</td><td>—</td><td><strong>64,392</strong></td></tr>
+        <tr><td>2054</td><td>59</td><td style="color:#34d399">V</td><td>—</td><td class="ins-info">+27,792</td><td>—</td><td>—</td><td><strong>27,792</strong></td></tr>
+        <tr style="background:rgba(52,211,153,0.04)"><td><strong>2055</strong></td><td><strong>60</strong></td><td style="color:#34d399"><strong>V</strong></td><td>—</td><td class="ins-info">+24,108</td><td class="ins-ok">+9,765</td><td class="ins-highlight">+14,591</td><td><strong class="ins-ok">48,464</strong></td></tr>
+        <tr><td>2056</td><td>61</td><td style="color:#34d399">V</td><td>—</td><td class="ins-info">+21,012</td><td class="ins-ok">+9,765</td><td class="ins-highlight">+14,591</td><td><strong>45,368</strong></td></tr>
+        <tr><td>2057+</td><td>62+</td><td style="color:#34d399">V</td><td>—</td><td>逐年递减</td><td class="ins-ok">+9,765/年</td><td class="ins-highlight">+14,591/年</td><td><strong>~24,356+/年</strong></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="ins-note">
+      <strong class="ins-highlight">关键节点：</strong><br>
+      ① <strong>2027-2030年：</strong>富赢今生每年返2.7万，可部分对冲保费支出（净保费从8.35万降至~5.65万）<br>
+      ② <strong>2032年：</strong>保费大幅减负（年省5.45万），释放投资弹药<br>
+      ③ <strong>2052年：</strong>富赢今生一次性返还42万，可作为晚年安全垫或注入投资组合<br>
+      ④ <strong>2055年起：</strong>三重养老现金流开启（养老年金+父亲购保+国家养老金），年入~4.8万，叠加投资被动收入形成多层防护
+    </div>
+
+    <!-- ===== E. 风险分析与建议 ===== -->
+    <h4>E. 保险组合评估与缺口分析</h4>
+    <div class="ins-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+      <div class="ins-card" style="border-color:rgba(52,211,153,0.2);">
+        <div class="ins-name" style="color:#34d399;">✅ 优势</div>
+        <div class="ins-detail" style="text-align:left;">
+          <strong>1. 本人保障充裕</strong><br>寿险101万+意外90万+重疾70万+医疗410万，能覆盖各类风险<br><br>
+          <strong>2. 保费节奏合理</strong><br>高峰集中2026-2032（与收入高峰重叠），2032后大幅减负<br><br>
+          <strong>3. 多层退休现金流</strong><br>2055年后三重养老金叠加~4.8万/年，形成投资被动收入之外的安全垫<br><br>
+          <strong>4. e生保全家覆盖</strong><br>400万百万医疗为全家提供了大病兜底
+        </div>
+      </div>
+      <div class="ins-card" style="border-color:rgba(248,113,113,0.2);">
+        <div class="ins-name" style="color:#f87171;">⚠️ 风险与缺口</div>
+        <div class="ins-detail" style="text-align:left;">
+          <strong class="ins-warn">1. 老婆保障严重不足</strong><br>寿险20万+重疾10万，远低于家庭负担（2026年4月即将成为母亲）。建议：补充定期寿险至80-100万（~1,000元/年）+ 重疾50万（~3,000-5,000元/年）<br><br>
+          <strong class="ins-warn">2. 公司保险=离职风险</strong><br>本人40万寿+40万意外+重疾10万依赖在职状态。2033年若被裁→即刻失效。平安福61万寿+50万意外可兜底，但重疾缺口从70万降至60万<br><br>
+          <strong class="ins-warn">3. 父母无重疾保障</strong><br>仅百万医疗（1万免赔），1万内的医疗费需自费。年龄大了重疾险太贵，可考虑防癌险/惠民保补充<br><br>
+          <strong class="ins-warn">4. 平安福性价比低</strong><br>年缴1.31万×30年=39.38万，保障61万寿+60万重疾。但已持有5年（退保损失大），建议继续持有完成缴费<br><br>
+          <strong class="ins-warn">5. 保费占收入比过高</strong><br>8.35万/年=13.7%收入，超过10%警戒线。但2032年后降至~4.8%，短期阵痛可承受
+        </div>
+      </div>
+      <div class="ins-card" style="border-color:rgba(250,204,21,0.2);">
+        <div class="ins-name" style="color:#facc15;">💡 操作建议</div>
+        <div class="ins-detail" style="text-align:left;">
+          <strong>P0（预产期前）：</strong>为老婆补充定期寿险80-100万 + 重疾险50万，年增~4,000-6,000元<br><br>
+          <strong>P1（年内）：</strong>为父母补充惠民保/防癌险，每人~200-500元/年<br><br>
+          <strong>P2（长期）：</strong>宝宝出生后配百万医疗+少儿重疾险（~1,000-2,000元/年）<br><br>
+          <strong>不建议操作：</strong><br>
+          · 不退平安福（已缴5年，退保损失约40-50%）<br>
+          · 不提前退出富赢今生（2027年开始返钱）<br>
+          · 不减少个人养老金（有税收优惠抵扣个税）
+        </div>
+      </div>
+    </div>
+    <div class="ins-note" style="margin-top:16px;">
+      <strong style="color:#f472b6">保险与投资框架的关系：</strong>保险是投资的<strong>前置条件</strong>——没有保障的投资=在沙滩上建城堡。当前8.35万/年的保费确实挤压了投资弹药，但2032年后释放的5.45万/年将直接转化为投资现金流。<strong>短期牺牲换长期确定性，符合框架"纪律>冲动"的核心原则。</strong>
+    </div>
+  </div>
+
+  <!-- ========== 小民回测 · 精简版（移至全文末尾） ========== -->
+  <div class="backtest-section" id="sec-backtest">
+    <h3>🔬 小民全生命周期回测（1991-2025 · 五幕验证 · 50万→2,850万 · 年化12.5%）</h3>
+    <p style="font-size:12px;color:#7b8db0;line-height:1.7;margin-bottom:16px;">
+      小民，1960年生，1991年31岁开始投资，2025年65岁退休。经历第五波康波完整周期（信息技术/互联网）。<strong style="color:#f87171">⚠️ 后验偏差：1991年不可能知道该买谁，回测结论可参考但不可作为收益预测。</strong>
+    </p>
+    <div class="table-wrap">
+    <table class="calc-table" style="border-color:rgba(167,139,250,0.15);">
+      <thead>
+        <tr><th>幕</th><th>年龄/时期</th><th>康波位置</th><th>核心操作</th><th>资产变化</th><th>年化</th><th>映射你</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:#60a5fa"><strong>I 播种</strong></td>
+          <td>31-35<br>1991-1995</td>
+          <td>繁荣初期<br>PC/互联网萌芽</td>
+          <td style="text-align:left;font-size:11px">重仓Intel+MSFT+Cisco，定投标普500。年投20万</td>
+          <td><strong style="color:#34d399">50万→245万</strong></td>
+          <td style="color:#34d399">24%</td>
+          <td style="text-align:left;font-size:11px">2026-2030 AI/半导体。<strong>赛道选择>择时</strong></td>
+        </tr>
+        <tr>
+          <td style="color:#a78bfa"><strong>II 收割</strong></td>
+          <td>36-40<br>1996-2000</td>
+          <td>繁荣顶部<br>互联网泡沫</td>
+          <td style="text-align:left;font-size:11px">CAPE>40+鞋童信号→卖出60%权益→国债+红利</td>
+          <td><strong style="color:#34d399">245万→520万</strong><br><span style="font-size:10px;color:#f87171">未减仓者680→180万</span></td>
+          <td style="color:#34d399">16%</td>
+          <td style="text-align:left;font-size:11px">2031-2037 信号减仓。<strong>卖早了>卖晚了</strong></td>
+        </tr>
+        <tr>
+          <td style="color:#fb923c"><strong>III 防御</strong></td>
+          <td>41-50<br>2001-2010</td>
+          <td>衰退→萧条<br>911/次贷危机</td>
+          <td style="text-align:left;font-size:11px">70%国债+红利，20%黄金($270→$1400·5倍)，10%科技种子</td>
+          <td><strong style="color:#34d399">520万→920万</strong><br><span style="font-size:10px;color:#8892b0">+新增150万</span></td>
+          <td style="color:#facc15">4.6%</td>
+          <td style="text-align:left;font-size:11px">2036-2045 黄金+债券+红利。<strong>防御=胜利</strong></td>
+        </tr>
+        <tr>
+          <td style="color:#f472b6"><strong>IV 再播种</strong></td>
+          <td>51-55<br>2011-2015</td>
+          <td>萧条尾声<br>移动互联网/AI萌芽</td>
+          <td style="text-align:left;font-size:11px">30%重入权益(Apple/Google/Amazon/NVDA种子)，黄金高位卖50%</td>
+          <td><strong style="color:#34d399">920万→1,580万</strong></td>
+          <td style="color:#34d399">11.4%</td>
+          <td style="text-align:left;font-size:11px">2046-2050 第七波康波抄底。<strong>贡献终局35%+</strong></td>
+        </tr>
+        <tr>
+          <td style="color:#34d399"><strong>V 传承</strong></td>
+          <td>56-65<br>2016-2025</td>
+          <td>第六波繁荣<br>AI爆发</td>
+          <td style="text-align:left;font-size:11px">权益40%+债券红利50%+黄金10%。NVDA种子$5→$130(26倍)</td>
+          <td><strong style="color:#34d399">1,580万→2,850万</strong></td>
+          <td style="color:#34d399">6.1%</td>
+          <td style="text-align:left;font-size:11px">2051-2065 极低风险+传承。<strong>靠复利安享</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:#7b8db0;line-height:1.7;">
+      <strong style="color:#f1f5f9">核心结论：</strong>不是年化多高，而是<strong style="color:#f87171">每一幕都做对了该做的事</strong>。第一幕选对赛道、第二幕信号逃顶、第三幕防守不亏、第四幕萧条抄底、第五幕低风险传承。
+    </div>
+
+    <div style="margin-top:20px;padding:16px 20px;background:rgba(248,113,113,0.04);border:1px solid rgba(248,113,113,0.12);border-radius:12px;">
+      <h4 style="color:#f87171;font-size:14px;margin-bottom:10px;">⚠️ 全生命周期核心教训（42条 · v7.5新增教训生命周期管理：活跃→稳定→归档）</h4>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;font-size:11.5px;line-height:1.7;color:#8892b0;">
+        <div>
+          <strong style="color:#60a5fa;font-size:12px">投资逻辑（9条）</strong><br>
+          ① 单一股票风险→双核心分散<br>
+          ② 逃顶>抄底→信号驱动减仓<br>
+          ③ 低回报期最难熬→提前接受心理预期<br>
+          ④ 萧条保弹药→复苏期果断出手<br>
+          ⑤ AI集中度：直接≤55%，穿透≤65%<br>
+          ⑥ 效率革命≠需求萎缩（Jevons悖论）<br>
+          ⑦ 康波定位>日历（减仓窗口2031-2037）<br>
+          ⑧ 回测存在后验偏差<br>
+          ⑨ 提取率匹配期限（50年期用3.5%）
+        </div>
+        <div>
+          <strong style="color:#fbbf24;font-size:12px">执行纪律（6条）</strong><br>
+          ① 单标的>35%必须卖出，零例外<br>
+          ② 私募信号驱动退出，不设时间锚<br>
+          ③ 执行必须与目标一致，言行不一=最大风险<br>
+          ④ 信号系统需定义作用域<br>
+          ⑤ 换汇方向逻辑不可混淆<br>
+          ⑥ 触发即执行，禁止主观延迟（信号到了不等财报）
+        </div>
+        <div>
+          <strong style="color:#34d399;font-size:12px">流程规范（27条）</strong><br>
+          ① 单一数据源原则<br>
+          ② 价格更新后反向扫描路线图<br>
+          ③ 信息采集对照清单执行<br>
+          ④ 所有数值反推验证<br>
+          ⑤ 版本双指针六处交叉核对（含反向指针+价格面板标题）<br>
+          ⑥ 价格表=一个交易日，零例外<br>
+          ⑦ 升版=执行7项联动清单<br>
+          ⑧ 假设变更全链追溯（展示层≠逻辑层）<br>
+          ⑨ 散落引用用grep定位+数值标注语义<br>
+          ⑩ 融合重写，禁止补丁堆叠（行动区域不放changelog）<br>
+          ⑪ 板块按使用频率分层，禁止按主题亲近性插入<br>
+          ⑫ §0内部状态交叉校验+教训总数硬编码校验<br>
+          ⑬ Rules单独升版时HTML反向指针必须同步（六处交叉核对）<br>
+          ⑭ 写入清单与验证清单必须对称覆盖（有写入义务必有验证机制）<br>
+          ⑮ 人力资本-金融资产相关性对冲+MDD速度约束+估值动态校准（结构性缺口补全）<br>
+          ⑯ 规则系统必须通过多情景压力测试验证（规则缺失>规则错误）<br>
+          ⑰ 形式合规≠实质合规：版本号对齐但内容缺失=假性同步（双文件原子性修改）<br>
+          ⑱ 硬编码计数校验覆盖全层级（总计+分类子计数）+补丁清理=预防+追溯双维度<br>
+          ⑲ 跨客户端升版完整性不可假设：当次自检+下次复检双保障（同一模型≠同一行为）
+          ⑳ 甘特图时间段必须同时标注里程碑事件和常规操作baseline（双轨标注·不可仅写里程碑而省略routine）
+          ㉑ AI事实陈述须前置验证——"持有/已建仓"须核对Dashboard（标的池≠实际持仓）
+          ㉒ 条件规则须定期检验有效性——绝对价格阈值是伪装成规则的价格预测
+          ㉓ 执行记录仅引用本计划内标的——AI倾向用"附近讨论过的标的"构建合理化叙事而非如实记录
+          ㉔ 规则写入≠规则执行——自检机制本身必须处于AI的自然执行路径上（SSOT必须是价格更新第一步·教训㊴）
+          ㉕ 正向标注无法穷举网状引用——需反向扫描发现遗漏（SSOT双层检测：精确匹配+覆盖率审计·v5.15）
+          ㉖ 辅助功能必须区分受众——AI消费的信息走console/注释，禁止投射到用户阅读界面（v5.15b·28个黄色虚线框事件）
+          ㉗ AI没有定时器——"定期执行"规则必须有被动触发机制（逾期扫描+用户日历提醒双保障）
+        </div>
+      </div>
+    </div>
+
+    <!-- 历史教训归档区（v7.5新增·教训生命周期管理·>6个月的教训完整版存档） -->
+    <details style="margin-top:16px;">
+      <summary style="font-size:12px;color:#546380;cursor:pointer;">📂 历史教训归档（完整版 · 当前无归档教训，首次压缩将在下次全量更新时执行）</summary>
+      <div style="font-size:11px;color:#7b8db0;margin-top:8px;padding:12px;background:rgba(96,165,250,0.03);border:1px solid rgba(96,165,250,0.08);border-radius:8px;">
+        <p>教训生命周期管理规则（Rules v7.5 §10）：</p>
+        <ul style="margin:4px 0;padding-left:20px;line-height:1.7;">
+          <li><strong>活跃期（0-3个月）：</strong>完整详细描述，§12流程活跃检查项</li>
+          <li><strong>稳定期（3-6个月）：</strong>压缩为一句话摘要，标注"已固化为§12.X"</li>
+          <li><strong>归档期（>6个月）：</strong>编号+一句话存于Rules，完整版移至此处</li>
+          <li><strong>永久保留：</strong>①-⑦回测基础教训 + 架构级教训不压缩</li>
+        </ul>
+        <p style="margin-top:8px;color:#546380;">（归档教训将在此处按编号逐条列出完整内容）</p>
+      </div>
+    </details>
+  </div>
+
+  </div><!-- ref-zone end -->
+
+<!-- 常驻侧边导航 -->
+<nav id="tocNav">
+  <!-- 仪表盘层 -->
+  <a href="#sec-macro" style="font-size:9px;color:#546380;pointer-events:none;padding:2px 14px;">─ 仪表盘 ─</a>
+  <a href="#sec-macro"><span class="nav-icon">📡</span>宏观速递</a>
+  <a href="#sec-risk"><span class="nav-icon">🚨</span>TOP风险</a>
+  <a href="#sec-panel"><span class="nav-icon">📊</span>资产监控</a>
+  <a href="#sec-price"><span class="nav-icon">💰</span>持仓价格</a>
+  <!-- 手册层 -->
+  <a href="#sec-signal" style="font-size:9px;color:#546380;pointer-events:none;padding:2px 14px;">─ 参考手册 ─</a>
+  <a href="#sec-signal"><span class="nav-icon">⚙️</span>信号系统</a>
+  <a href="#sec-benchmark"><span class="nav-icon">🪞</span>基准镜像</a>
+  <a href="#sec-deep"><span class="nav-icon">🔍</span>标的深度</a>
+  <a href="#sec-unlock"><span class="nav-icon">🔓</span>腾讯解禁</a>
+  <a href="#sec-forex"><span class="nav-icon">💱</span>换汇策略</a>
+  <a href="#sec-private"><span class="nav-icon">📊</span>私募策略</a>
+  <a href="#sec-acts"><span class="nav-icon">🎭</span>五幕概览</a>
+  <a href="#sec-gantt"><span class="nav-icon">📅</span>甘特图</a>
+  <a href="#sec-calc"><span class="nav-icon">📐</span>资产测算</a>
+  <a href="#sec-expense"><span class="nav-icon">💸</span>支出规划</a>
+  <a href="#sec-human"><span class="nav-icon">🧠</span>人力资本</a>
+  <a href="#sec-insurance"><span class="nav-icon">🏥</span>保险防护</a>
+  <a href="#sec-backtest"><span class="nav-icon">🔬</span>回测教训</a>
+</nav>
+<script>
+// 平滑滚动
+document.querySelectorAll('#tocNav a').forEach(a=>{
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    const t=document.querySelector(this.getAttribute('href'));
+    if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+// 滚动高亮当前板块
+(function(){
+  const links=document.querySelectorAll('#tocNav a');
+  const secs=Array.from(links).map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  let ticking=false;
+  window.addEventListener('scroll',function(){
+    if(!ticking){requestAnimationFrame(function(){
+      let cur=0;
+      for(let i=0;i<secs.length;i++){
+        if(secs[i].getBoundingClientRect().top<=120) cur=i;
+      }
+      links.forEach((a,i)=>{
+        if(i===cur){a.style.color='#60a5fa';a.style.borderLeftColor='#60a5fa';a.style.background='rgba(96,165,250,0.08)';}
+        else{a.style.color='';a.style.borderLeftColor='';a.style.background='';}
+      });
+      ticking=false;
+    });ticking=true;}
+  });
+})();
+</script>
+
+<!-- 下载长图按钮 -->
+<div id="downloadBtn" onclick="downloadAsImage()" style="
+  position: fixed; right: 28px; bottom: 36px; z-index: 9999;
+  width: 54px; height: 54px; border-radius: 50%;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  box-shadow: 0 4px 20px rgba(96,165,250,0.4);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+" onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 6px 28px rgba(96,165,250,0.6)'"
+   onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 20px rgba(96,165,250,0.4)'">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+    <polyline points="7 10 12 15 17 10"/>
+    <line x1="12" y1="15" x2="12" y2="3"/>
+  </svg>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+  async function downloadAsImage() {
+    const btn = document.getElementById('downloadBtn');
+    const originalHTML = btn.innerHTML;
+    // 显示加载状态
+    btn.innerHTML = '<div style="width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite"></div>';
+    btn.style.pointerEvents = 'none';
+
+    // 添加旋转动画
+    if (!document.getElementById('spinStyle')) {
+      const style = document.createElement('style');
+      style.id = 'spinStyle';
+      style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+      document.head.appendChild(style);
+    }
+
+    try {
+      const container = document.querySelector('.container');
+      const canvas = await html2canvas(container, {
+        backgroundColor: '#080c1f',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        width: container.scrollWidth,
+        height: container.scrollHeight,
+        windowWidth: container.scrollWidth,
+        windowHeight: container.scrollHeight
+      });
+
+      const link = document.createElement('a');
+      const now = new Date();
+      const dateStr = now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0');
+      link.download = '资产操作全景图_' + dateStr + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+
+      // 成功反馈
+      btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(() => { btn.innerHTML = originalHTML; btn.style.pointerEvents = 'auto'; }, 1500);
+    } catch (e) {
+      console.error('截图失败:', e);
+      alert('截图下载失败：' + (e.message || '未知错误') + '\n\n建议：1) 检查网络连接（需加载html2canvas库）\n2) 尝试使用浏览器自带的"打印→保存为PDF"功能');
+      btn.innerHTML = '<span style="color:#f87171;font-size:20px;font-weight:bold">✕</span>';
+      setTimeout(() => { btn.innerHTML = originalHTML; btn.style.pointerEvents = 'auto'; }, 2000);
+    }
+  }
+</script>
+
+<!-- ===== 数据一致性自检脚本（双层检测：精确匹配 + 静默覆盖率审计） ===== -->
+<script>
+(function(){
+  var ssot = document.getElementById('data-ssot');
+  if (!ssot) return;
+  var alertEl = document.getElementById('consistency-alert');
+  var checks = document.querySelectorAll('[data-check]');
+  var mismatches = [];
+
+  // ═══ 第一层：精确匹配（data-check元素 vs SSOT） ═══
+  checks.forEach(function(el) {
+    var rules = el.getAttribute('data-check').split(';');
+    rules.forEach(function(rule) {
+      var parts = rule.split('=');
+      var key = parts[0].trim();
+      var ssotVal = ssot.getAttribute('data-' + key);
+      if (!ssotVal) return;
+      var text = el.textContent || el.innerText;
+      if (!text.includes(ssotVal)) {
+        mismatches.push({ key: key, expected: ssotVal, found: text.substring(0, 80).trim(), el: el });
+        el.classList.add('data-mismatch');
+      }
+    });
+  });
+
+  // ═══ 第二层：覆盖率审计（仅扫描数据展示类元素·静默输出到console） ═══
+  // 设计原则：页面中SSOT值的引用分两类——
+  //   A) 数据展示位（.ec-value, .tag, .bench-value等）→ 必须与SSOT同步
+  //   B) 叙述性引用（宏观卡片描述"VIX 19.09大降"等）→ 描述性文字，天然含值但不需要监控
+  // 第二层只扫描A类元素，避免B类产生大量噪音告警
+  var displaySelectors = [
+    '.ec-value', '.ec-sub',
+    '.asset-card .value', '.asset-card .tag',
+    '.asset-card > div[style]',
+    '.bench-value', '.bench-label',
+    '.panel-title',
+    '.version',
+    'h3'
+  ];
+  var coveredEls = new Set();
+  checks.forEach(function(el) { coveredEls.add(el); });
+  var auditKeys = ['nvda-earnings-countdown', 'portfolio-gain', 'portfolio-value', 'vix', 'cape', 'alpha'];
+  var uncovered = [];
+
+  displaySelectors.forEach(function(sel) {
+    var els = document.querySelectorAll(sel);
+    els.forEach(function(el) {
+      if (coveredEls.has(el)) return;
+      // 排除：祖先已被data-check覆盖
+      var ancestor = el.parentElement;
+      while (ancestor && ancestor !== document.body) {
+        if (coveredEls.has(ancestor)) return;
+        ancestor = ancestor.parentElement;
+      }
+      var text = el.textContent || '';
+      auditKeys.forEach(function(key) {
+        var ssotVal = ssot.getAttribute('data-' + key);
+        if (!ssotVal || ssotVal.length < 3) return;
+        if (text.includes(ssotVal)) {
+          uncovered.push({ key: key, value: ssotVal, el: el, text: text.substring(0, 60).trim() });
+        }
+      });
+    });
+  });
+
+  // ═══ 输出 ═══
+  if (mismatches.length > 0) {
+    var grouped = {};
+    mismatches.forEach(function(m) {
+      if (!grouped[m.key]) grouped[m.key] = [];
+      grouped[m.key].push(m);
+    });
+    var html = '<strong>⚠️ 数据不一致：' + mismatches.length + ' 处！</strong>（SSOT vs 展示层）<br>';
+    for (var key in grouped) {
+      html += '· <strong>' + key + '</strong> 期望 "' + grouped[key][0].expected + '" → ' + grouped[key].length + ' 处不匹配<br>';
+    }
+    html += '<span style="font-size:10px;opacity:0.7">红色虚线标记了不匹配的元素。请更新 #data-ssot 或修正展示层数据。</span>';
+    alertEl.innerHTML = html;
+    alertEl.style.display = 'block';
+  } else {
+    alertEl.style.display = 'none';
+  }
+
+  // 覆盖率缺口仅输出到控制台，不干扰页面
+  if (uncovered.length > 0) {
+    var seen = {};
+    var unique = uncovered.filter(function(u) {
+      var id = u.key + '|' + u.text;
+      if (seen[id]) return false;
+      seen[id] = true; return true;
+    });
+    console.group('%c[SSOT覆盖率审计] ' + unique.length + ' 个数据展示元素含SSOT值但未被data-check监控', 'color:#f59e0b;font-weight:bold');
+    unique.forEach(function(u) {
+      console.warn(u.key + ' "' + u.value + '" → ', u.el);
+    });
+    console.log('如果这些是数据展示位，请添加 data-check 属性。如果是标题/描述性文字则可忽略。');
+    console.groupEnd();
+  }
+})();
+</script>
+
+</body>
+</html>
